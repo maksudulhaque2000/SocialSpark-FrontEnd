@@ -1,4 +1,5 @@
 export interface User {
+  _id?: string;
   id: string;
   name: string;
   email: string;
@@ -8,6 +9,7 @@ export interface User {
   interests?: string[];
   isVerified: boolean;
   isActive: boolean;
+  hostedEvents?: Event[];
   createdAt: string;
   updatedAt: string;
 }
@@ -21,6 +23,7 @@ export interface Event {
   date: string;
   time: string;
   hostId: User | string;
+  image?: string;
   bannerImage?: string;
   maxParticipants: number;
   currentParticipants: number;
