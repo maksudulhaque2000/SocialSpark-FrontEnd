@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FiCalendar, FiUsers, FiDollarSign, FiPlus, FiEdit, FiTrash2, FiEye } from 'react-icons/fi';
+import { FiCalendar, FiUsers, FiDollarSign, FiPlus, FiEdit, FiTrash2, FiEye, FiUser, FiSettings } from 'react-icons/fi';
 import { authService } from '@/lib/auth';
 import { userService } from '@/lib/users';
 import { eventService } from '@/lib/events';
@@ -97,18 +97,43 @@ export default function HostDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Host Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {user.name}!</p>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+                {user.profileImage ? (
+                  <img
+                    src={user.profileImage}
+                    alt={user.name}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <FiUser className="w-8 h-8 text-blue-600" />
+                )}
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
+                <p className="text-gray-600">{user.email}</p>
+                <span className="inline-block mt-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                  {user.role}
+                </span>
+              </div>
             </div>
-            <Link
-              href="/events/create"
-              className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
-            >
-              <FiPlus />
-              <span>Create Event</span>
-            </Link>
+            <div className="flex gap-3">
+              <Link
+                href="/profile/edit"
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              >
+                <FiSettings />
+                <span>Edit Profile</span>
+              </Link>
+              <Link
+                href="/events/create"
+                className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
+              >
+                <FiPlus />
+                <span>Create Event</span>
+              </Link>
+            </div>
           </div>
         </div>
 

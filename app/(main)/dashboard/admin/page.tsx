@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiUsers, FiCalendar, FiDollarSign, FiTrendingUp } from 'react-icons/fi';
+import Link from 'next/link';
+import { FiUsers, FiCalendar, FiDollarSign, FiTrendingUp, FiUser, FiSettings } from 'react-icons/fi';
 import { authService } from '@/lib/auth';
 import { User } from '@/types';
 
@@ -21,7 +22,7 @@ export default function AdminDashboard() {
       return;
     }
     setUser(currentUser);
-  }, []);
+  }, [router]);
 
   if (!user) return null;
 
@@ -30,8 +31,38 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">Platform Overview & Management</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
+                {user.profileImage ? (
+                  <img
+                    src={user.profileImage}
+                    alt={user.name}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <FiUser className="w-8 h-8 text-purple-600" />
+                )}
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
+                <p className="text-gray-600">{user.email}</p>
+                <span className="inline-block mt-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold">
+                  {user.role}
+                </span>
+              </div>
+            </div>
+            <Link
+              href="/profile/edit"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            >
+              <FiSettings />
+              <span>Edit Profile</span>
+            </Link>
+          </div>
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <p className="text-gray-600">Platform Overview & Management</p>
+          </div>
         </div>
 
         {/* Stats Grid */}
