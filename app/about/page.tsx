@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   FiUsers, 
@@ -10,6 +13,17 @@ import {
 } from 'react-icons/fi';
 
 export default function AboutPage() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) setUser(JSON.parse(userData));
+    } catch (err) {
+      // ignore parsing errors
+    }
+  }, []);
+
   const stats = [
     { icon: FiUsers, label: 'Active Users', value: '10,000+', color: 'text-blue-600' },
     { icon: FiTarget, label: 'Events Hosted', value: '5,000+', color: 'text-purple-600' },
@@ -234,18 +248,54 @@ export default function AboutPage() {
             Be part of something bigger. Start your journey with SocialSpark today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/register"
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition inline-flex items-center justify-center"
-            >
-              Get Started
-            </Link>
-            <Link
-              href="/events"
-              className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
-            >
-              Browse Events
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  href="/events"
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition inline-flex items-center justify-center"
+                >
+                  Explore Events
+                </Link>
+
+                {user.role === 'Host' ? (
+                  <Link
+                    href="/events/create"
+                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  >
+                    Create Event
+                  </Link>
+                ) : user.role === 'Admin' ? (
+                  <Link
+                    href="/admin/events"
+                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  >
+                    Manage Events
+                  </Link>
+                ) : (
+                  <Link
+                    href="/dashboard/user"
+                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  >
+                    My Dashboard
+                  </Link>
+                )}
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/register"
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition inline-flex items-center justify-center"
+                >
+                  Get Started
+                </Link>
+                <Link
+                  href="/events"
+                  className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                >
+                  Browse Events
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
