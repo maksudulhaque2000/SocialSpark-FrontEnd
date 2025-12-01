@@ -147,7 +147,13 @@ export default function EventDetailsPage() {
   }
 
   const host = typeof event.hostId === 'object' ? event.hostId : null;
-  const isParticipant = currentUser && event.participants.includes(currentUser.id);
+  
+  // Check if current user is a participant
+  const isParticipant = currentUser && event.participants.some((participant: any) => {
+    const participantId = typeof participant === 'object' ? participant._id || participant.id : participant;
+    return participantId === currentUser.id;
+  });
+  
   const isHost = currentUser && host && currentUser.id === host.id;
   const isFull = event.currentParticipants >= event.maxParticipants;
   const daysUntil = getDaysUntilEvent(event.date);
@@ -305,19 +311,25 @@ export default function EventDetailsPage() {
                   <p className="text-sm text-gray-600 text-center">You are hosting this event</p>
                 </div>
               ) : isParticipant ? (
-                <button
-                  onClick={handleLeaveEvent}
-                  className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition"
-                >
-                  Leave Event
-                </button>
+                <div className="space-y-2">
+                  <button
+                    onClick={handleLeaveEvent}
+                    className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition"
+                  >
+                    Leave Event
+                  </button>
+                  <p className="text-sm text-green-600 text-center font-semibold">✓ You have joined this event</p>
+                </div>
               ) : (
                 <button
                   onClick={handleJoinEvent}
                   disabled={joining || isFull || event.status !== 'upcoming'}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {joining ? 'Joining...' : isFull ? 'Event Full' : 'Join Event'}
+                  {joining ? 'Joining...' : 
+                   isFull ? 'Event Full' : 
+                   event.status !== 'upcoming' ? 'Event Not Available' : 
+                   'Join Event'}
                 </button>
               )}
             </div>
