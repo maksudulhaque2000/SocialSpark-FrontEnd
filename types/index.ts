@@ -31,6 +31,8 @@ export interface Event {
   isPaid: boolean;
   status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
   participants: (User | string)[];
+  isApproved: boolean;
+  rejectionReason?: string;
   createdAt: string;
   updatedAt: string;
 }

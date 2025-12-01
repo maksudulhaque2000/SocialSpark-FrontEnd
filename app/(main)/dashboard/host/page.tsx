@@ -287,7 +287,7 @@ export default function HostDashboard() {
                         </Link>
                         <Link
                           href={`/events/${event._id}/edit`}
-                          className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm"
+                          className="flex items-center gap-2 px-4 py-2 border border-gray-600 text-gray-800 rounded-lg hover:bg-gray-50 transition text-sm"
                         >
                           <FiEdit />
                           <span>Edit</span>
