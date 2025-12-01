@@ -360,7 +360,7 @@ export default function CreateEventPage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition"
+                className="px-6 py-3 border border-gray-600 rounded-lg font-semibold hover:bg-gray-200 transition text-gray-800"
               >
                 Cancel
               </button>

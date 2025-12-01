@@ -9,6 +9,8 @@ import { authService } from '@/lib/auth';
 import { Event, User } from '@/types';
 import { formatDate, formatCurrency, getDaysUntilEvent } from '@/utils/helpers';
 import Swal from 'sweetalert2';
+import EventComments from '@/components/EventComments';
+import EventReviews from '@/components/EventReviews';
 
 export default function EventDetailsPage() {
   const params = useParams();
@@ -194,24 +196,32 @@ export default function EventDetailsPage() {
             {host && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-bold mb-4">Hosted By</h2>
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
-                    {host.profileImage ? (
-                      <img
-                        src={host.profileImage}
-                        alt={host.name}
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-2xl font-bold text-blue-600">
-                        {host.name.charAt(0)}
-                      </span>
-                    )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+                      {host.profileImage ? (
+                        <img
+                          src={host.profileImage}
+                          alt={host.name}
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-2xl font-bold text-blue-600">
+                          {host.name.charAt(0)}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">{host.name}</h3>
+                      <p className="text-gray-600 text-sm">{host.bio || 'Event Host'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-lg">{host.name}</h3>
-                    <p className="text-gray-600 text-sm">{host.bio || 'Event Host'}</p>
-                  </div>
+                  <Link
+                    href={`/host/${host._id || host.id}`}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
+                  >
+                    View Profile
+                  </Link>
                 </div>
               </div>
             )}
@@ -313,6 +323,22 @@ export default function EventDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Comments Section */}
+        <div className="mt-8">
+          <EventComments eventId={event._id} />
+        </div>
+
+        {/* Reviews Section */}
+        {host && (
+          <div className="mt-8">
+            <EventReviews 
+              eventId={event._id} 
+              eventStatus={event.status} 
+              hostId={host._id || host.id} 
+            />
+          </div>
+        )}
       </div>
     </div>
   );

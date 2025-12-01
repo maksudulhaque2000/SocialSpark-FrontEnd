@@ -52,9 +52,14 @@ export default function Navbar() {
               Events
             </Link>
             {user?.role === 'Host' && (
-              <Link href="/events/create" className="text-gray-700 hover:text-blue-600 transition">
-                Create Event
-              </Link>
+              <>
+                <Link href="/events/create" className="text-gray-700 hover:text-blue-600 transition">
+                  Create Event
+                </Link>
+                <Link href={`/host/${user.id}`} className="text-gray-700 hover:text-blue-600 transition">
+                  My Profile
+                </Link>
+              </>
             )}
             <Link href="/about" className="text-gray-700 hover:text-blue-600 transition">
               About
@@ -119,13 +124,22 @@ export default function Navbar() {
               Events
             </Link>
             {user?.role === 'Host' && (
-              <Link
-                href="/events/create"
-                className="block px-3 py-2 text-gray-700 hover:bg-blue-50 rounded-md"
-                onClick={() => setIsOpen(false)}
-              >
-                Create Event
-              </Link>
+              <>
+                <Link
+                  href="/events/create"
+                  className="block px-3 py-2 text-gray-700 hover:bg-blue-50 rounded-md"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Create Event
+                </Link>
+                <Link
+                  href={`/host/${user.id}`}
+                  className="block px-3 py-2 text-gray-700 hover:bg-blue-50 rounded-md"
+                  onClick={() => setIsOpen(false)}
+                >
+                  My Profile
+                </Link>
+              </>
             )}
             <Link
               href="/about"
