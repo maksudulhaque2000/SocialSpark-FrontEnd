@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook } from 'react-icons/fa';
-import Swal from 'sweetalert2';
 import { authService } from '@/lib/auth';
 import { getErrorMessage } from '@/utils/helpers';
+import { showSuccess, showError, showInfo } from '@/utils/sweetalert';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,6 +19,26 @@ export default function LoginPage() {
     password: '',
   });
 
+  // Component mounted
+  useEffect(() => {
+    // Suppress console errors for expected 401 responses
+    const originalError = console.error;
+    console.error = (...args: any[]) => {
+      // Filter out axios 401 errors from console
+      if (
+        args[0]?.includes?.('Request failed with status code 401') ||
+        args[0]?.name === 'AxiosError'
+      ) {
+        return; // Don't log 401 errors (they're expected for wrong password)
+      }
+      originalError.apply(console, args);
+    };
+
+    return () => {
+      console.error = originalError; // Restore original on unmount
+    };
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -28,6 +48,11 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    // Don't submit if already loading
+    if (loading) return;
+    
     setLoading(true);
 
     try {
@@ -36,35 +61,39 @@ export default function LoginPage() {
       if (response.success && response.data) {
         authService.saveAuthData(response.data.token, response.data.user);
         
-        await Swal.fire({
-          icon: 'success',
-          title: 'Login Successful!',
-          text: `Welcome back, ${response.data.user.name}!`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-
-        // Redirect based on role
-        const role = response.data.user.role.toLowerCase();
-        router.push(`/dashboard/${role}`);
+        await showSuccess(
+          'Login Successful!',
+          `Welcome back, ${response.data.user.name}!`,
+          {
+            timer: 1500,
+            willClose: () => {
+              // Redirect based on role
+              const role = response.data.user.role.toLowerCase();
+              router.push(`/dashboard/${role}`);
+            },
+          }
+        );
       }
-    } catch (error: any) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Failed',
-        text: getErrorMessage(error),
-      });
-    } finally {
       setLoading(false);
+    } catch (error: any) {
+      // Don't log the full error object to reduce console noise
+      const errMsg = getErrorMessage(error);
+      
+      // Set loading to false immediately
+      setLoading(false);
+      
+      try {
+        // Show error alert and wait for user to dismiss it
+        await showError('Login Failed', errMsg);
+      } catch (alertError) {
+        // If alert fails for some reason, just log it
+        console.error('Alert error:', alertError);
+      }
     }
   };
 
   const handleSocialLogin = (provider: 'google' | 'facebook') => {
-    Swal.fire({
-      icon: 'info',
-      title: 'Coming Soon',
-      text: `${provider} login will be available soon!`,
-    });
+    showInfo('Coming Soon', `${provider} login will be available soon!`);
   };
 
   return (
@@ -105,7 +134,7 @@ export default function LoginPage() {
           </div>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on" noValidate>
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

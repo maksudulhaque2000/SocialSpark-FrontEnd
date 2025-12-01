@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook } from 'react-icons/fa';
-import Swal from 'sweetalert2';
 import { authService } from '@/lib/auth';
 import { getErrorMessage, isValidEmail, isValidPassword } from '@/utils/helpers';
+import { showSuccess, showError, showInfo } from '@/utils/sweetalert';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -23,6 +23,25 @@ export default function RegisterPage() {
     role: 'User' as 'User' | 'Host',
   });
 
+  // Suppress console errors for expected 400/401 responses
+  useEffect(() => {
+    const originalError = console.error;
+    console.error = (...args: any[]) => {
+      // Filter out axios errors from console
+      if (
+        args[0]?.includes?.('Request failed with status code') ||
+        args[0]?.name === 'AxiosError'
+      ) {
+        return; // Don't log expected errors
+      }
+      originalError.apply(console, args);
+    };
+
+    return () => {
+      console.error = originalError;
+    };
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
@@ -32,26 +51,25 @@ export default function RegisterPage() {
 
   const validateForm = (): boolean => {
     if (formData.name.length < 2) {
-      Swal.fire('Error', 'Name must be at least 2 characters', 'error');
+      showError('Invalid Name', 'Name must be at least 2 characters');
       return false;
     }
 
     if (!isValidEmail(formData.email)) {
-      Swal.fire('Error', 'Please enter a valid email address', 'error');
+      showError('Invalid Email', 'Please enter a valid email address');
       return false;
     }
 
     if (!isValidPassword(formData.password)) {
-      Swal.fire(
-        'Error',
-        'Password must be at least 6 characters with 1 uppercase, 1 lowercase, and 1 number',
-        'error'
+      showError(
+        'Weak Password',
+        'Password must be at least 6 characters with 1 uppercase, 1 lowercase, and 1 number'
       );
       return false;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      Swal.fire('Error', 'Passwords do not match', 'error');
+      showError('Password Mismatch', 'Passwords do not match');
       return false;
     }
 
@@ -60,6 +78,10 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    // Don't submit if already loading
+    if (loading) return;
 
     if (!validateForm()) return;
 
@@ -72,33 +94,30 @@ export default function RegisterPage() {
       if (response.success && response.data) {
         authService.saveAuthData(response.data.token, response.data.user);
 
-        await Swal.fire({
-          icon: 'success',
-          title: 'Registration Successful!',
-          text: `Welcome to SocialSpark, ${response.data.user.name}!`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-
-        router.push('/');
+        await showSuccess(
+          'Registration Successful!',
+          `Welcome to SocialSpark, ${response.data.user.name}!`,
+          {
+            timer: 1500,
+            willClose: () => {
+              router.push('/');
+            },
+          }
+        );
       }
     } catch (error: any) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Registration Failed',
-        text: getErrorMessage(error),
-      });
+      // Ensure loading is set to false before showing alert
+      setLoading(false);
+      // Wait for the error alert to be dismissed
+      await showError('Registration Failed', getErrorMessage(error));
+      return; // Prevent further execution
     } finally {
       setLoading(false);
     }
   };
 
   const handleSocialLogin = (provider: 'google' | 'facebook') => {
-    Swal.fire({
-      icon: 'info',
-      title: 'Coming Soon',
-      text: `${provider} registration will be available soon!`,
-    });
+    showInfo('Coming Soon', `${provider} registration will be available soon!`);
   };
 
   return (
