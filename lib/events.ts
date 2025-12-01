@@ -90,4 +90,16 @@ export const eventService = {
     const response = await api.get('/events/categories');
     return response.data;
   },
+
+  // Get event participants (for host/admin)
+  getEventParticipants: async (eventId: string): Promise<ApiResponse<{ participants: any[]; totalParticipants: number }>> => {
+    const response = await api.get(`/events/${eventId}/participants`);
+    return response.data;
+  },
+
+  // Get event revenue (for host/admin)
+  getEventRevenue: async (eventId: string): Promise<ApiResponse<{ eventId: string; eventTitle: string; totalRevenue: number; totalPayments: number; payments: any[] }>> => {
+    const response = await api.get(`/events/${eventId}/revenue`);
+    return response.data;
+  },
 };

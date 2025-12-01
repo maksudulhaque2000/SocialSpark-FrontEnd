@@ -145,6 +145,98 @@ export default function HostDashboard() {
     }
   };
 
+  const handleViewParticipants = async (eventId: string, eventTitle: string) => {
+    try {
+      const response = await eventService.getEventParticipants(eventId);
+      if (response.success && response.data) {
+        const participants = response.data.participants;
+        
+        if (participants.length === 0) {
+          await Swal.fire({
+            icon: 'info',
+            title: 'No Participants Yet',
+            text: 'No one has joined this event yet.',
+          });
+          return;
+        }
+
+        const participantsHtml = participants.map((participant: any) => `
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; text-align: left;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">
+              ${participant.profileImage ? `<img src="${participant.profileImage}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />` : participant.name.charAt(0)}
+            </div>
+            <div style="flex: 1;">
+              <div style="font-weight: 600; color: #111827;">${participant.name}</div>
+              <div style="font-size: 14px; color: #6b7280;">${participant.email}</div>
+              ${participant.bio ? `<div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">${participant.bio}</div>` : ''}
+            </div>
+            <a href="/host/${participant._id || participant.id}" style="padding: 8px 16px; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">View Profile</a>
+          </div>
+        `).join('');
+
+        await Swal.fire({
+          title: `Participants of "${eventTitle}"`,
+          html: `
+            <div style="max-height: 400px; overflow-y: auto; padding: 8px;">
+              ${participantsHtml}
+            </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-weight: 600; color: #111827;">
+              Total Participants: ${response.data.totalParticipants}
+            </div>
+          `,
+          width: '600px',
+          confirmButtonText: 'Close',
+        });
+      }
+    } catch (error) {
+      Swal.fire('Error', 'Failed to load participants', 'error');
+    }
+  };
+
+  const handleViewRevenue = async (eventId: string, eventTitle: string) => {
+    try {
+      const response = await eventService.getEventRevenue(eventId);
+      if (response.success && response.data) {
+        const { totalRevenue, totalPayments, payments } = response.data;
+
+        const paymentsHtml = payments.length > 0 ? payments.map((payment: any) => `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                ${payment.userId?.profileImage ? `<img src="${payment.userId.profileImage}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />` : payment.userId?.name?.charAt(0) || 'U'}
+              </div>
+              <div style="text-align: left;">
+                <div style="font-weight: 600; color: #111827;">${payment.userId?.name || 'Unknown User'}</div>
+                <div style="font-size: 12px; color: #6b7280;">${payment.userId?.email || ''}</div>
+              </div>
+            </div>
+            <div style="font-weight: 700; color: #10b981; font-size: 16px;">
+              ${formatCurrency(payment.amount)}
+            </div>
+          </div>
+        `).join('') : '<p style="color: #6b7280; text-align: center; padding: 20px;">No payments yet</p>';
+
+        await Swal.fire({
+          title: `Revenue from "${eventTitle}"`,
+          html: `
+            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 24px; border-radius: 12px; margin-bottom: 20px;">
+              <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total Revenue</div>
+              <div style="font-size: 36px; font-weight: 700;">${formatCurrency(totalRevenue)}</div>
+              <div style="font-size: 14px; opacity: 0.9; margin-top: 8px;">from ${totalPayments} payment${totalPayments !== 1 ? 's' : ''}</div>
+            </div>
+            <div style="max-height: 300px; overflow-y: auto; padding: 8px;">
+              ${paymentsHtml}
+            </div>
+          `,
+          width: '600px',
+          confirmButtonText: 'Close',
+        });
+      }
+    } catch (error) {
+      Swal.fire('Error', 'Failed to load revenue data', 'error');
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -354,6 +446,22 @@ export default function HostDashboard() {
                           <FiEye />
                           <span>View</span>
                         </Link>
+                        <button
+                          onClick={() => handleViewParticipants(event._id, event.title)}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm"
+                        >
+                          <FiUsers />
+                          <span>Participants ({event.currentParticipants})</span>
+                        </button>
+                        {event.isPaid && (
+                          <button
+                            onClick={() => handleViewRevenue(event._id, event.title)}
+                            className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm"
+                          >
+                            <FiDollarSign />
+                            <span>Revenue</span>
+                          </button>
+                        )}
                         <Link
                           href={`/events/${event._id}/edit`}
                           className="flex items-center gap-2 px-4 py-2 border border-gray-600 text-gray-800 rounded-lg hover:bg-gray-50 transition text-sm"

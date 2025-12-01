@@ -12,6 +12,7 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiArrowLeft,
+  FiEye,
 } from 'react-icons/fi';
 import { authService } from '@/lib/auth';
 import { adminService } from '@/lib/admin';
@@ -288,6 +289,13 @@ export default function ManageUsersPage() {
                         <td className="px-4 py-4 text-gray-900">{user.joinedEvents}</td>
                         <td className="px-4 py-4">
                           <div className="flex items-center justify-end gap-2">
+                            <Link
+                              href={user.role === 'Host' ? `/host/${user.id}` : `/user/${user.id}`}
+                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+                              title="View Profile"
+                            >
+                              <FiEye />
+                            </Link>
                             <button
                               onClick={() => handleChangeRole(user.id, user.name, user.role)}
                               className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
