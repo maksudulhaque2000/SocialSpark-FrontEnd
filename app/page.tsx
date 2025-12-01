@@ -12,7 +12,9 @@ import {
   FiClock,
   FiTrendingUp,
   FiAward,
-  FiHeart
+  FiHeart,
+  FiChevronLeft,
+  FiChevronRight
 } from 'react-icons/fi';
 import { eventService } from '@/lib/events';
 import { userService } from '@/lib/users';
@@ -86,9 +88,9 @@ export default function Home() {
 
     // Fetch approved website reviews
     try {
-      const reviewsResponse = await websiteReviewService.getApprovedReviews({ limit: 6 });
+      const reviewsResponse = await websiteReviewService.getApprovedReviews({ limit: 20 });
       if (reviewsResponse.success && reviewsResponse.data) {
-        setWebsiteReviews(reviewsResponse.data.reviews.slice(0, 3));
+        setWebsiteReviews(reviewsResponse.data.reviews);
       }
     } catch (error: any) {
       console.error('Error fetching reviews:', error?.message || error);
@@ -111,6 +113,7 @@ export default function Home() {
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     // Check if user is logged in
@@ -119,6 +122,34 @@ export default function Home() {
       setUser(JSON.parse(userData));
     }
   }, []);
+
+  // Auto-slide effect for reviews carousel
+  useEffect(() => {
+    if (websiteReviews.length <= 3) return; // Don't auto-slide if 3 or fewer reviews
+    
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => {
+        const maxSlide = Math.max(0, websiteReviews.length - 3);
+        return prev >= maxSlide ? 0 : prev + 1;
+      });
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [websiteReviews.length]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => {
+      const maxSlide = Math.max(0, websiteReviews.length - 3);
+      return prev >= maxSlide ? 0 : prev + 1;
+    });
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => {
+      const maxSlide = Math.max(0, websiteReviews.length - 3);
+      return prev <= 0 ? maxSlide : prev - 1;
+    });
+  };
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -393,36 +424,84 @@ export default function Home() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
             </div>
           ) : websiteReviews.length > 0 ? (
-            <div className="grid md:grid-cols-3 gap-8">
-              {websiteReviews.map((review) => (
-                <div key={review._id} className="bg-white/10 backdrop-blur-lg rounded-lg p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="text-4xl mr-4">
-                      {typeof review.userId === 'object' && review.userId.profileImage ? (
-                        <img
-                          src={review.userId.profileImage}
-                          alt={review.name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl">
-                          {review.name?.charAt(0).toUpperCase() || 'U'}
+            <div className="relative">
+              {/* Carousel Container */}
+              <div className="overflow-hidden">
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * (100 / 3)}%)` }}
+                >
+                  {websiteReviews.map((review) => (
+                    <div key={review._id} className="w-full md:w-1/3 flex-shrink-0 px-4">
+                      <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 h-full">
+                        <div className="flex items-center mb-4">
+                          <div className="text-4xl mr-4">
+                            {typeof review.userId === 'object' && review.userId.profileImage ? (
+                              <img
+                                src={review.userId.profileImage}
+                                alt={review.name}
+                                className="w-12 h-12 rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl">
+                                {review.name?.charAt(0).toUpperCase() || 'U'}
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <h4 className="font-bold">{review.name || 'User'}</h4>
+                            <p className="text-blue-100 text-sm">User</p>
+                          </div>
                         </div>
-                      )}
+                        <div className="flex mb-3">
+                          {[...Array(review.rating)].map((_, i) => (
+                            <FiStar key={i} className="fill-current text-yellow-400" />
+                          ))}
+                        </div>
+                        <p className="text-blue-50 italic">&quot;{review.comment}&quot;</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold">{review.name || 'User'}</h4>
-                      <p className="text-blue-100 text-sm">User</p>
-                    </div>
-                  </div>
-                  <div className="flex mb-3">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <FiStar key={i} className="fill-current text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-blue-50 italic">&quot;{review.comment}&quot;</p>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Navigation Buttons */}
+              {websiteReviews.length > 3 && (
+                <>
+                  <button
+                    onClick={prevSlide}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
+                    aria-label="Previous reviews"
+                  >
+                    <FiChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={nextSlide}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
+                    aria-label="Next reviews"
+                  >
+                    <FiChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
+
+              {/* Slide Indicators */}
+              {websiteReviews.length > 3 && (
+                <div className="flex justify-center gap-2 mt-8">
+                  {Array.from({ length: Math.max(0, websiteReviews.length - 2) }).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        currentSlide === index 
+                          ? 'bg-white w-8' 
+                          : 'bg-white/40 hover:bg-white/60'
+                      }`}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-12">
