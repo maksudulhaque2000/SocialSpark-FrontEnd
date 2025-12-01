@@ -34,6 +34,9 @@ interface DashboardStats {
     pendingApproval: number;
     newThisMonth: number;
   };
+  reviews: {
+    pendingReviews: number;
+  };
   categoryDistribution: Array<{ _id: string; count: number }>;
   recentUsers: Array<any>;
   recentEvents: Array<any>;
@@ -272,6 +275,20 @@ export default function AdminDashboard() {
                         <p className="font-semibold text-orange-900">Pending Approvals</p>
                         <p className="text-sm text-orange-700">
                           {stats.events.pendingApproval} events waiting for approval
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/dashboard/admin/reviews"
+                    className="block w-full text-left px-4 py-3 border border-purple-300 bg-purple-50 rounded-lg hover:bg-purple-100 transition text-gray-900"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FiCheckCircle className="text-purple-600" />
+                      <div>
+                        <p className="font-semibold text-purple-900">Website Reviews</p>
+                        <p className="text-sm text-purple-700">
+                          {stats.reviews?.pendingReviews || 0} reviews pending approval
                         </p>
                       </div>
                     </div>

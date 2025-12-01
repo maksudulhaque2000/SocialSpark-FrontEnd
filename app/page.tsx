@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Swal from 'sweetalert2';
 import { 
   FiCalendar, 
   FiUsers, 
@@ -15,13 +16,16 @@ import {
 } from 'react-icons/fi';
 import { eventService } from '@/lib/events';
 import { userService } from '@/lib/users';
-import { Event, User } from '@/types';
+import { statsService } from '@/lib/stats';
+import { websiteReviewService } from '@/lib/websiteReviews';
+import { Event, User, WebsiteReview } from '@/types';
 import { formatDate, formatCurrency } from '@/utils/helpers';
 
 export default function Home() {
   const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [topHosts, setTopHosts] = useState<User[]>([]);
+  const [websiteReviews, setWebsiteReviews] = useState<WebsiteReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalEvents: 0,
@@ -35,32 +39,64 @@ export default function Home() {
   }, []);
 
   const fetchData = async () => {
+    setLoading(true);
+    
+    // Fetch platform statistics
     try {
-      // Fetch featured events (first 3)
+      const statsResponse = await statsService.getStats();
+      if (statsResponse.success && statsResponse.data) {
+        setStats({
+          totalEvents: statsResponse.data.totalEvents,
+          totalUsers: statsResponse.data.totalUsers,
+          totalHosts: statsResponse.data.totalHosts,
+          eventsThisMonth: statsResponse.data.eventsThisMonth,
+        });
+      }
+    } catch (error: any) {
+      console.error('Error fetching stats:', error?.message || error);
+      // Set default stats if API fails
+      setStats({
+        totalEvents: 0,
+        totalUsers: 0,
+        totalHosts: 0,
+        eventsThisMonth: 0,
+      });
+    }
+
+    // Fetch featured events
+    try {
       const eventsResponse = await eventService.getEvents({ limit: 6 });
       if (eventsResponse.success && eventsResponse.data) {
         setFeaturedEvents(eventsResponse.data.events.slice(0, 3));
         setUpcomingEvents(eventsResponse.data.events.slice(3, 6));
-        
-        // Mock stats (in real app, get from API)
-        setStats({
-          totalEvents: eventsResponse.data.events.length,
-          totalUsers: 1250,
-          totalHosts: 89,
-          eventsThisMonth: 45
-        });
       }
+    } catch (error: any) {
+      console.error('Error fetching events:', error?.message || error);
+    }
 
-      // Fetch top hosts
+    // Fetch top hosts
+    try {
       const hostsResponse = await userService.getTopHosts();
       if (hostsResponse.success && hostsResponse.data) {
         setTopHosts(hostsResponse.data.hosts.slice(0, 4));
       }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
+    } catch (error: any) {
+      console.error('Error fetching top hosts:', error?.message || error);
     }
+
+    // Fetch approved website reviews
+    try {
+      const reviewsResponse = await websiteReviewService.getApprovedReviews({ limit: 6 });
+      if (reviewsResponse.success && reviewsResponse.data) {
+        setWebsiteReviews(reviewsResponse.data.reviews.slice(0, 3));
+      }
+    } catch (error: any) {
+      console.error('Error fetching reviews:', error?.message || error);
+      // Reviews are optional, so just set empty array
+      setWebsiteReviews([]);
+    }
+
+    setLoading(false);
   };
 
   const categories = [
@@ -71,29 +107,66 @@ export default function Home() {
     { name: 'Gaming', icon: '🎮', color: 'from-orange-500 to-red-500' }
   ];
 
-  const testimonials = [
-    {
-      name: 'Sarah Johnson',
-      role: 'Event Enthusiast',
-      image: '👩',
-      text: 'SocialSpark helped me find amazing hiking partners. Made so many new friends!',
-      rating: 5
-    },
-    {
-      name: 'Michael Chen',
-      role: 'Tech Meetup Host',
-      image: '👨',
-      text: 'Best platform for organizing tech events. The community is fantastic!',
-      rating: 5
-    },
-    {
-      name: 'Emily Davis',
-      role: 'Sports Lover',
-      image: '👩‍🦰',
-      text: 'Found my regular basketball crew here. Highly recommend!',
-      rating: 5
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
     }
-  ];
+  }, []);
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Login Required',
+        text: 'Please login to submit a review',
+      });
+      return;
+    }
+
+    if (reviewForm.comment.length < 10) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: 'Review must be at least 10 characters',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await websiteReviewService.createReview({
+        rating: reviewForm.rating,
+        comment: reviewForm.comment,
+      });
+
+      if (response.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Review submitted successfully! It will be published after admin approval.',
+          timer: 3000,
+        });
+        setShowReviewModal(false);
+        setReviewForm({ rating: 5, comment: '' });
+      }
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message || 'Failed to submit review',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div>
@@ -281,10 +354,10 @@ export default function Home() {
                     {host.profileImage ? (
                       <img src={host.profileImage} alt={host.name} className="w-full h-full rounded-full object-cover" />
                     ) : (
-                      host.name.charAt(0).toUpperCase()
+                      host.name?.charAt(0).toUpperCase() || 'H'
                     )}
                   </div>
-                  <h3 className="font-bold text-lg mb-1">{host.name}</h3>
+                  <h3 className="font-bold text-lg mb-1">{host.name || 'Host'}</h3>
                   <p className="text-gray-600 text-sm mb-3">{host.role}</p>
                   <div className="flex items-center justify-center text-yellow-500 mb-2">
                     {[...Array(5)].map((_, i) => (
@@ -304,28 +377,135 @@ export default function Home() {
       {/* Testimonials */}
       <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">What Our Users Say</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white/10 backdrop-blur-lg rounded-lg p-6">
-                <div className="flex items-center mb-4">
-                  <div className="text-4xl mr-4">{testimonial.image}</div>
-                  <div>
-                    <h4 className="font-bold">{testimonial.name}</h4>
-                    <p className="text-blue-100 text-sm">{testimonial.role}</p>
-                  </div>
-                </div>
-                <div className="flex mb-3">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <FiStar key={i} className="fill-current text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-blue-50 italic">&quot;{testimonial.text}&quot;</p>
-              </div>
-            ))}
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="text-3xl font-bold">What Our Users Say</h2>
+            {user && (
+              <button
+                onClick={() => setShowReviewModal(true)}
+                className="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition"
+              >
+                Write a Review
+              </button>
+            )}
           </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+            </div>
+          ) : websiteReviews.length > 0 ? (
+            <div className="grid md:grid-cols-3 gap-8">
+              {websiteReviews.map((review) => (
+                <div key={review._id} className="bg-white/10 backdrop-blur-lg rounded-lg p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="text-4xl mr-4">
+                      {typeof review.userId === 'object' && review.userId.profileImage ? (
+                        <img
+                          src={review.userId.profileImage}
+                          alt={review.name}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl">
+                          {review.name?.charAt(0).toUpperCase() || 'U'}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold">{review.name || 'User'}</h4>
+                      <p className="text-blue-100 text-sm">User</p>
+                    </div>
+                  </div>
+                  <div className="flex mb-3">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <FiStar key={i} className="fill-current text-yellow-400" />
+                    ))}
+                  </div>
+                  <p className="text-blue-50 italic">&quot;{review.comment}&quot;</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-xl text-blue-100">No reviews yet. Be the first to share your experience!</p>
+              {user && (
+                <button
+                  onClick={() => setShowReviewModal(true)}
+                  className="mt-4 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition"
+                >
+                  Write a Review
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </section>
+
+      {/* Review Modal */}
+      {showReviewModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-2xl font-bold mb-4 text-gray-900">Write a Review</h3>
+            <form onSubmit={handleSubmitReview}>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-semibold mb-2">Rating</label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                      className="focus:outline-none"
+                    >
+                      <FiStar
+                        className={`w-8 h-8 ${
+                          star <= reviewForm.rating
+                            ? 'fill-current text-yellow-400'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-semibold mb-2">Your Review</label>
+                <textarea
+                  value={reviewForm.comment}
+                  onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  rows={4}
+                  placeholder="Share your experience with SocialSpark..."
+                  required
+                  minLength={10}
+                  maxLength={500}
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  {reviewForm.comment.length}/500 characters (minimum 10)
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  disabled={isSubmitting || reviewForm.comment.length < 10}
+                  className="flex-1 bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowReviewModal(false);
+                    setReviewForm({ rating: 5, comment: '' });
+                  }}
+                  className="flex-1 bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-400 transition"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Upcoming Events Timeline */}
       <section className="py-16 bg-gray-50">

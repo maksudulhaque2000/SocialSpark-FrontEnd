@@ -57,6 +57,31 @@ export interface Payment {
   createdAt: string;
 }
 
+export interface WebsiteReview {
+  _id: string;
+  userId: User | string;
+  name: string;
+  email: string;
+  rating: number;
+  comment: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PlatformStats {
+  totalUsers: number;
+  totalHosts: number;
+  totalEvents: number;
+  eventsThisMonth: number;
+  activeEvents: number;
+  totalApprovedReviews: number;
+  categoryDistribution: {
+    _id: string;
+    count: number;
+  }[];
+}
+
 export interface ApiResponse<T = any> {
   success: boolean;
   message: string;
