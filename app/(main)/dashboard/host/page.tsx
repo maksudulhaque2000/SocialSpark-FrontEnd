@@ -90,6 +90,43 @@ export default function HostDashboard() {
     }
   };
 
+  const handleStatusChange = async (eventId: string, eventTitle: string, currentStatus: string) => {
+    const { value: newStatus } = await Swal.fire({
+      title: `Update Status: ${eventTitle}`,
+      input: 'select',
+      inputOptions: {
+        upcoming: 'Upcoming',
+        ongoing: 'Ongoing',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
+      },
+      inputValue: currentStatus,
+      showCancelButton: true,
+      confirmButtonText: 'Update',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'You need to select a status!';
+        }
+      },
+    });
+
+    if (newStatus && newStatus !== currentStatus) {
+      try {
+        await eventService.updateEventStatus(eventId, newStatus);
+        await Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: 'Event status has been updated',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        if (user) fetchHostedEvents(user.id);
+      } catch (error) {
+        Swal.fire('Error', 'Failed to update status', 'error');
+      }
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -292,6 +329,13 @@ export default function HostDashboard() {
                           <FiEdit />
                           <span>Edit</span>
                         </Link>
+                        <button
+                          onClick={() => handleStatusChange(event._id, event.title, event.status)}
+                          className="flex items-center gap-2 px-4 py-2 border border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition text-sm"
+                        >
+                          <FiSettings />
+                          <span>Status</span>
+                        </button>
                         <button
                           onClick={() => handleDeleteEvent(event._id, event.title)}
                           className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm"

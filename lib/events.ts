@@ -67,6 +67,12 @@ export const eventService = {
     return response.data;
   },
 
+  // Update event status
+  updateEventStatus: async (id: string, status: string): Promise<ApiResponse<{ event: Event }>> => {
+    const response = await api.patch(`/events/${id}/status`, { status });
+    return response.data;
+  },
+
   // Join event
   joinEvent: async (id: string): Promise<ApiResponse<{ event: Event }>> => {
     const response = await api.post(`/events/${id}/join`);
