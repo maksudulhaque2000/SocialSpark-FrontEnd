@@ -90,7 +90,7 @@ export default function EventsPage() {
                   placeholder="Search events..."
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -102,7 +102,7 @@ export default function EventsPage() {
                   placeholder="Location..."
                   value={filters.location}
                   onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -181,7 +181,7 @@ export default function EventsPage() {
                       </div>
                     )}
                     {/* Category Badge */}
-                    <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-semibold">
+                    <div className="absolute top-3 right-3 bg-blue-600 px-3 py-1 rounded-full text-xs font-semibold">
                       {event.category}
                     </div>
                     {/* Price Badge */}
@@ -240,17 +240,17 @@ export default function EventsPage() {
                 <button
                   onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
                   disabled={!pagination.hasPrevPage}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900"
                 >
                   Previous
                 </button>
-                <span className="px-4 py-2 border border-gray-300 rounded-lg bg-blue-50">
+                <span className="px-4 py-2 border border-gray-300 rounded-lg bg-blue-50 text-gray-900">
                   Page {filters.page} of {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
                   disabled={!pagination.hasNextPage}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900"
                 >
                   Next
                 </button>

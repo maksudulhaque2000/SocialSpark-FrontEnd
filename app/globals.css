@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    /* --background: #0a0a0a; */
     --foreground: #ededed;
   }
 }
@@ -23,4 +23,89 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Input Fields - স্পষ্ট কালো টেক্সট */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="search"],
+textarea,
+select {
+  color: #1f2937 !important; /* ডার্ক গ্রে টেক্সট */
+  background-color: #ffffff !important; /* সাদা ব্যাকগ্রাউন্ড */
+}
+
+/* Disabled Inputs */
+input:disabled,
+textarea:disabled,
+select:disabled {
+  color: #6b7280 !important; /* মিডিয়াম গ্রে */
+  background-color: #f3f4f6 !important; /* হালকা গ্রে ব্যাকগ্রাউন্ড */
+}
+
+/* Placeholder Text - স্পষ্ট */
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af !important; /* মিডিয়াম গ্রে প্লেসহোল্ডার */
+  opacity: 1 !important;
+}
+
+/* Labels - স্পষ্ট ডার্ক কালার */
+label {
+  color: #374151 !important; /* ডার্ক গ্রে লেবেল */
+  font-weight: 500;
+}
+
+/* Select Dropdown Options */
+select option {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+/* Headers এবং Text - সব জায়গায় স্পষ্ট */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #111827 !important; /* খুব ডার্ক, প্রায় কালো */
+}
+
+/* Paragraph এবং সাধারণ টেক্সট */
+p {
+  color: #374151;
+}
+
+/* Dark Mode Override - যদি ডার্ক মোড চালু থাকে */
+@media (prefers-color-scheme: dark) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="search"],
+  textarea,
+  select {
+    color: #1f2937 !important;
+    background-color: #ffffff !important;
+  }
+
+  label {
+    color: #374151 !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #111827 !important;
+  }
 }

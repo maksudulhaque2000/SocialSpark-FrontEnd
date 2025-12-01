@@ -84,10 +84,10 @@ export default function UserDashboard() {
             </div>
             <Link
               href="/profile/edit"
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              className="flex items-center gap-2 px-4 py-2 border border-blue-600 rounded-lg hover:bg-gray-50 transition"
             >
-              <FiSettings />
-              <span>Edit Profile</span>
+              <FiSettings className="w-6 h-6 text-blue-600" />
+              <span className="text-blue-600">Edit Profile</span>
             </Link>
           </div>
         </div>
