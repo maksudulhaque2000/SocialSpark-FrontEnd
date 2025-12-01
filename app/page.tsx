@@ -26,6 +26,7 @@ import { formatDate, formatCurrency } from '@/utils/helpers';
 export default function Home() {
   const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [popularEvents, setPopularEvents] = useState<Event[]>([]);
   const [topHosts, setTopHosts] = useState<User[]>([]);
   const [websiteReviews, setWebsiteReviews] = useState<WebsiteReview[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,12 +66,24 @@ export default function Home() {
       });
     }
 
-    // Fetch featured events
+    // Fetch all events (not just upcoming)
     try {
-      const eventsResponse = await eventService.getEvents({ limit: 6 });
-      if (eventsResponse.success && eventsResponse.data) {
-        setFeaturedEvents(eventsResponse.data.events.slice(0, 3));
-        setUpcomingEvents(eventsResponse.data.events.slice(3, 6));
+      const [featuredResponse, upcomingResponse, popularResponse] = await Promise.all([
+        eventService.getEvents({ limit: 3, status: 'upcoming', sortBy: 'createdAt', sortOrder: 'desc' }),
+        eventService.getEvents({ limit: 6, status: 'upcoming', sortBy: 'date', sortOrder: 'asc' }),
+        eventService.getEvents({ limit: 8, status: 'upcoming', sortBy: 'participants', sortOrder: 'desc' })
+      ]);
+      
+      if (featuredResponse.success && featuredResponse.data) {
+        setFeaturedEvents(featuredResponse.data.events);
+      }
+      
+      if (upcomingResponse.success && upcomingResponse.data) {
+        setUpcomingEvents(upcomingResponse.data.events);
+      }
+
+      if (popularResponse.success && popularResponse.data) {
+        setPopularEvents(popularResponse.data.events);
       }
     } catch (error: any) {
       console.error('Error fetching events:', error?.message || error);
@@ -211,21 +224,58 @@ export default function Home() {
             <p className="text-xl md:text-2xl mb-8 text-blue-100">
               Find partners for events, activities, and social experiences
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/events"
-                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition inline-flex items-center justify-center"
-              >
-                Browse Events
-                <FiArrowRight className="ml-2" />
-              </Link>
-              <Link
-                href="/register"
-                className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition"
-              >
-                Join Now
-              </Link>
-            </div>
+            {user ? (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/events"
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition inline-flex items-center justify-center"
+                >
+                  Browse Events
+                  <FiArrowRight className="ml-2" />
+                </Link>
+                {user.role === 'Host' ? (
+                  <Link
+                    href="/events/create"
+                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  >
+                    Create Event
+                    <FiCalendar className="ml-2" />
+                  </Link>
+                ) : user.role === 'Admin' ? (
+                  <Link
+                    href="/admin/events"
+                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  >
+                    Admin Dashboard
+                    <FiAward className="ml-2" />
+                  </Link>
+                ) : (
+                  <Link
+                    href="/dashboard/user"
+                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  >
+                    My Dashboard
+                    <FiUsers className="ml-2" />
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/events"
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition inline-flex items-center justify-center"
+                >
+                  Browse Events
+                  <FiArrowRight className="ml-2" />
+                </Link>
+                <Link
+                  href="/register"
+                  className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition"
+                >
+                  Join Now
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -377,11 +427,15 @@ export default function Home() {
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             </div>
-          ) : (
+          ) : topHosts.length > 0 ? (
             <div className="grid md:grid-cols-4 gap-8">
               {topHosts.map((host) => (
-                <div key={host._id} className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl">
+                <Link
+                  key={host._id}
+                  href={`/host/${host._id}`}
+                  className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition transform hover:scale-105"
+                >
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl overflow-hidden">
                     {host.profileImage ? (
                       <img src={host.profileImage} alt={host.name} className="w-full h-full rounded-full object-cover" />
                     ) : (
@@ -389,17 +443,24 @@ export default function Home() {
                     )}
                   </div>
                   <h3 className="font-bold text-lg mb-1">{host.name || 'Host'}</h3>
-                  <p className="text-gray-600 text-sm mb-3">{host.role}</p>
+                  <p className="text-gray-600 text-sm mb-3 capitalize">{host.role}</p>
                   <div className="flex items-center justify-center text-yellow-500 mb-2">
                     {[...Array(5)].map((_, i) => (
                       <FiStar key={i} className="fill-current" />
                     ))}
                   </div>
-                  <p className="text-gray-500 text-sm">
-                    {host.hostedEvents?.length || 0} Events Hosted
+                  <p className="text-gray-500 text-sm font-semibold">
+                    {(host as any).eventCount || 0} Events Hosted
                   </p>
-                </div>
+                  {host.bio && (
+                    <p className="text-gray-600 text-xs mt-2 line-clamp-2">{host.bio}</p>
+                  )}
+                </Link>
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-600 text-lg">No hosts available at the moment</p>
             </div>
           )}
         </div>
@@ -519,6 +580,71 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Popular Events by Category */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="text-3xl font-bold">Most Popular Events</h2>
+            <Link href="/events" className="text-blue-600 hover:text-blue-700 flex items-center">
+              Explore More <FiArrowRight className="ml-2" />
+            </Link>
+          </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            </div>
+          ) : popularEvents.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {popularEvents.map((event) => (
+                <Link
+                  key={event._id}
+                  href={`/events/${event._id}`}
+                  className="bg-white rounded-lg shadow-md hover:shadow-xl transition overflow-hidden group"
+                >
+                  <div className="h-40 bg-gradient-to-br from-purple-400 to-pink-500 relative overflow-hidden">
+                    {event.image ? (
+                      <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-300" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white text-5xl">
+                        {categories.find(c => c.name === event.category)?.icon || '🎉'}
+                      </div>
+                    )}
+                    <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-xs font-semibold text-purple-600 flex items-center">
+                      <FiTrendingUp className="mr-1" />
+                      Popular
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition line-clamp-1">{event.title}</h3>
+                    <div className="flex items-center text-gray-600 text-xs mb-2">
+                      <FiMapPin className="mr-1 flex-shrink-0" />
+                      <span className="line-clamp-1">{event.location}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600 text-xs mb-3">
+                      <FiClock className="mr-1 flex-shrink-0" />
+                      {formatDate(event.date)}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-blue-600 font-bold text-lg">{formatCurrency(event.price)}</span>
+                      <span className="text-gray-500 text-xs flex items-center">
+                        <FiUsers className="mr-1" />
+                        {event.participants.length}/{event.maxParticipants}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <div className="text-6xl mb-4">🔥</div>
+              <h3 className="text-xl font-bold text-gray-700 mb-2">No Popular Events Yet</h3>
+              <p className="text-gray-600">Check back soon for trending events!</p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Review Modal */}
       {showReviewModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -589,12 +715,17 @@ export default function Home() {
       {/* Upcoming Events Timeline */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Upcoming Events</h2>
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="text-3xl font-bold">Upcoming Events</h2>
+            <Link href="/events" className="text-blue-600 hover:text-blue-700 flex items-center">
+              View All <FiArrowRight className="ml-2" />
+            </Link>
+          </div>
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             </div>
-          ) : (
+          ) : upcomingEvents.length > 0 ? (
             <div className="space-y-6">
               {upcomingEvents.map((event, index) => (
                 <Link
@@ -643,6 +774,18 @@ export default function Home() {
                 </Link>
               ))}
             </div>
+          ) : (
+            <div className="text-center py-12 bg-white rounded-lg shadow-md">
+              <div className="text-6xl mb-4">📅</div>
+              <h3 className="text-xl font-bold text-gray-700 mb-2">No Upcoming Events</h3>
+              <p className="text-gray-600 mb-6">Check back later for exciting new events!</p>
+              <Link
+                href="/events"
+                className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+              >
+                Browse All Events <FiArrowRight className="ml-2" />
+              </Link>
+            </div>
           )}
         </div>
       </section>
@@ -650,22 +793,98 @@ export default function Home() {
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-xl mb-8 text-blue-100">Join thousands of people making real connections</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/register"
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition inline-flex items-center justify-center"
-            >
-              Create Your Account
-              <FiArrowRight className="ml-2" />
-            </Link>
-            <Link
-              href="/events"
-              className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
-            >
-              Browse Events
-            </Link>
+          {user ? (
+            <>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready for Your Next Adventure?</h2>
+              <p className="text-xl mb-8 text-blue-100">Discover exciting events and make lasting memories</p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/events"
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition inline-flex items-center justify-center"
+                >
+                  Explore All Events
+                  <FiArrowRight className="ml-2" />
+                </Link>
+                {user.role === 'Host' && (
+                  <Link
+                    href="/events/create"
+                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  >
+                    Create New Event
+                    <FiCalendar className="ml-2" />
+                  </Link>
+                )}
+                {user.role === 'Admin' && (
+                  <Link
+                    href="/admin/events"
+                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  >
+                    Manage Events
+                    <FiAward className="ml-2" />
+                  </Link>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
+              <p className="text-xl mb-8 text-blue-100">Join thousands of people making real connections</p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/register"
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition inline-flex items-center justify-center"
+                >
+                  Create Your Account
+                  <FiArrowRight className="ml-2" />
+                </Link>
+                <Link
+                  href="/events"
+                  className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                >
+                  Browse Events
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-4">Why Choose SocialSpark?</h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            We make it easy to discover, join, and create amazing social experiences
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center group">
+              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 transition">
+                <FiAward className="w-8 h-8 text-blue-600 group-hover:text-white transition" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Verified Hosts</h3>
+              <p className="text-gray-600">All hosts are verified to ensure safe and quality events</p>
+            </div>
+            <div className="text-center group">
+              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-600 transition">
+                <FiHeart className="w-8 h-8 text-purple-600 group-hover:text-white transition" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Community Driven</h3>
+              <p className="text-gray-600">Connect with like-minded people who share your interests</p>
+            </div>
+            <div className="text-center group">
+              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-600 transition">
+                <FiCalendar className="w-8 h-8 text-green-600 group-hover:text-white transition" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Easy Planning</h3>
+              <p className="text-gray-600">Create and manage events with our intuitive platform</p>
+            </div>
+            <div className="text-center group">
+              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-600 transition">
+                <FiTrendingUp className="w-8 h-8 text-orange-600 group-hover:text-white transition" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Growing Network</h3>
+              <p className="text-gray-600">Join a rapidly growing community of event enthusiasts</p>
+            </div>
           </div>
         </div>
       </section>
