@@ -4,6 +4,9 @@ import { ApiResponse } from '@/types';
 export interface PaymentIntent {
   clientSecret: string;
   paymentIntentId: string;
+  originalPrice?: number;
+  discountPercentage?: number;
+  finalPrice?: number;
 }
 
 export interface Payment {

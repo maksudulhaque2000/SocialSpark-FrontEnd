@@ -23,6 +23,11 @@ export default function EventDetailsPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentClientSecret, setPaymentClientSecret] = useState('');
+  const [paymentInfo, setPaymentInfo] = useState<{
+    originalPrice?: number;
+    discountPercentage?: number;
+    finalPrice?: number;
+  }>({});
   const [processingPayment, setProcessingPayment] = useState(false);
 
   useEffect(() => {
@@ -112,6 +117,11 @@ export default function EventDetailsPage() {
       const response = await paymentService.createPaymentIntent(event._id);
       if (response.success && response.data) {
         setPaymentClientSecret(response.data.clientSecret);
+        setPaymentInfo({
+          originalPrice: response.data.originalPrice,
+          discountPercentage: response.data.discountPercentage,
+          finalPrice: response.data.finalPrice,
+        });
         setShowPaymentModal(true);
       }
     } catch (error: any) {
@@ -428,7 +438,9 @@ export default function EventDetailsPage() {
         <PaymentModal
           isOpen={showPaymentModal}
           clientSecret={paymentClientSecret}
-          amount={event.price}
+          amount={paymentInfo.finalPrice || event.price}
+          originalPrice={paymentInfo.originalPrice}
+          discountPercentage={paymentInfo.discountPercentage}
           eventTitle={event.title}
           onSuccess={handlePaymentSuccess}
           onClose={handlePaymentCancel}

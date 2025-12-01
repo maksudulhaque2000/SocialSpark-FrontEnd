@@ -51,6 +51,9 @@ export default function Navbar() {
             <Link href="/events" className="text-gray-700 hover:text-blue-600 transition">
               Events
             </Link>
+            <Link href="/pricing" className="text-gray-700 hover:text-blue-600 transition">
+              Pricing
+            </Link>
             {user?.role === 'Host' && (
               <>
                 <Link href="/events/create" className="text-gray-700 hover:text-blue-600 transition">
@@ -122,6 +125,13 @@ export default function Navbar() {
               onClick={() => setIsOpen(false)}
             >
               Events
+            </Link>
+            <Link
+              href="/pricing"
+              className="block px-3 py-2 text-gray-700 hover:bg-blue-50 rounded-md"
+              onClick={() => setIsOpen(false)}
+            >
+              Pricing
             </Link>
             {user?.role === 'Host' && (
               <>

@@ -12,6 +12,7 @@ import {
   FiClock,
   FiCheckCircle,
   FiAlertCircle,
+  FiCreditCard,
 } from 'react-icons/fi';
 import { authService } from '@/lib/auth';
 import { adminService } from '@/lib/admin';
@@ -262,6 +263,18 @@ export default function AdminDashboard() {
                       <div>
                         <p className="font-semibold">Manage Events</p>
                         <p className="text-sm text-gray-600">Review, approve, and moderate events</p>
+                      </div>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/admin/subscriptions"
+                    className="block w-full text-left px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-900"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FiCreditCard className="text-purple-600" />
+                      <div>
+                        <p className="font-semibold">Subscription Plans</p>
+                        <p className="text-sm text-gray-600">Manage pricing, discounts, and features</p>
                       </div>
                     </div>
                   </Link>

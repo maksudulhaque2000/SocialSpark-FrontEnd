@@ -11,12 +11,14 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 
 interface PaymentFormProps {
   clientSecret: string;
   amount: number;
+  originalPrice?: number;
+  discountPercentage?: number;
   eventTitle: string;
   onSuccess: (paymentIntentId: string) => void;
   onCancel: () => void;
 }
 
-function PaymentForm({ clientSecret, amount, eventTitle, onSuccess, onCancel }: PaymentFormProps) {
+function PaymentForm({ clientSecret, amount, originalPrice, discountPercentage, eventTitle, onSuccess, onCancel }: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
@@ -72,10 +74,27 @@ function PaymentForm({ clientSecret, amount, eventTitle, onSuccess, onCancel }: 
           <span className="text-gray-700 font-semibold">Event:</span>
           <span className="text-gray-900">{eventTitle}</span>
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-gray-700 font-semibold">Amount:</span>
-          <span className="text-2xl font-bold text-blue-600">${amount.toFixed(2)}</span>
-        </div>
+        {originalPrice && discountPercentage && discountPercentage > 0 ? (
+          <>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-gray-700">Original Price:</span>
+              <span className="text-gray-500 line-through">${originalPrice.toFixed(2)}</span>
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-green-600 font-semibold">Subscription Discount ({discountPercentage}%):</span>
+              <span className="text-green-600 font-semibold">-${(originalPrice - amount).toFixed(2)}</span>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-blue-300">
+              <span className="text-gray-700 font-semibold">Final Amount:</span>
+              <span className="text-2xl font-bold text-blue-600">${amount.toFixed(2)}</span>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center justify-between">
+            <span className="text-gray-700 font-semibold">Amount:</span>
+            <span className="text-2xl font-bold text-blue-600">${amount.toFixed(2)}</span>
+          </div>
+        )}
       </div>
 
       <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -118,6 +137,8 @@ interface PaymentModalProps {
   isOpen: boolean;
   clientSecret: string;
   amount: number;
+  originalPrice?: number;
+  discountPercentage?: number;
   eventTitle: string;
   onSuccess: (paymentIntentId: string) => void;
   onClose: () => void;
@@ -127,6 +148,8 @@ export default function PaymentModal({
   isOpen,
   clientSecret,
   amount,
+  originalPrice,
+  discountPercentage,
   eventTitle,
   onSuccess,
   onClose,
@@ -160,6 +183,8 @@ export default function PaymentModal({
           <PaymentForm
             clientSecret={clientSecret}
             amount={amount}
+            originalPrice={originalPrice}
+            discountPercentage={discountPercentage}
             eventTitle={eventTitle}
             onSuccess={onSuccess}
             onCancel={onClose}
