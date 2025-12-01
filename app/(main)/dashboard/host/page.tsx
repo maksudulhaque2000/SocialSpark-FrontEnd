@@ -7,6 +7,7 @@ import { FiCalendar, FiUsers, FiDollarSign, FiPlus, FiEdit, FiTrash2, FiEye, FiU
 import { authService } from '@/lib/auth';
 import { userService } from '@/lib/users';
 import { eventService } from '@/lib/events';
+import { paymentService } from '@/lib/payments';
 import { User, Event } from '@/types';
 import { formatDate, formatCurrency } from '@/utils/helpers';
 import Swal from 'sweetalert2';
@@ -16,6 +17,8 @@ export default function HostDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [hostedEvents, setHostedEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [revenueLoading, setRevenueLoading] = useState(false);
+  const [totalRevenue, setTotalRevenue] = useState(0);
   const [stats, setStats] = useState({
     totalEvents: 0,
     totalParticipants: 0,
@@ -35,7 +38,22 @@ export default function HostDashboard() {
     }
     setUser(currentUser);
     fetchHostedEvents(currentUser.id);
+    fetchRevenue(currentUser.id);
   }, []);
+
+  const fetchRevenue = async (userId: string) => {
+    setRevenueLoading(true);
+    try {
+      const response = await paymentService.getHostRevenue(userId);
+      if (response.success && response.data) {
+        setTotalRevenue(response.data.totalRevenue || 0);
+      }
+    } catch (error) {
+      console.error('Failed to load revenue:', error);
+    } finally {
+      setRevenueLoading(false);
+    }
+  };
 
   const fetchHostedEvents = async (userId: string) => {
     setLoading(true);
@@ -175,7 +193,7 @@ export default function HostDashboard() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -196,6 +214,20 @@ export default function HostDashboard() {
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                 <FiUsers className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm">Total Revenue</p>
+                <p className="text-3xl font-bold text-green-600">
+                  {revenueLoading ? '...' : formatCurrency(totalRevenue)}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <FiDollarSign className="w-6 h-6 text-yellow-600" />
               </div>
             </div>
           </div>

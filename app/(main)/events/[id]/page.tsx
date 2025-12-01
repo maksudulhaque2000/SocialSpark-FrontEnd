@@ -5,12 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FiCalendar, FiMapPin, FiUsers, FiDollarSign, FiClock, FiArrowLeft } from 'react-icons/fi';
 import { eventService } from '@/lib/events';
+import { paymentService } from '@/lib/payments';
 import { authService } from '@/lib/auth';
 import { Event, User } from '@/types';
 import { formatDate, formatCurrency, getDaysUntilEvent } from '@/utils/helpers';
 import Swal from 'sweetalert2';
 import EventComments from '@/components/EventComments';
 import EventReviews from '@/components/EventReviews';
+import PaymentModal from '@/components/PaymentModal';
 
 export default function EventDetailsPage() {
   const params = useParams();
@@ -19,6 +21,9 @@ export default function EventDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentClientSecret, setPaymentClientSecret] = useState('');
+  const [processingPayment, setProcessingPayment] = useState(false);
 
   useEffect(() => {
     const user = authService.getSavedUser();
@@ -59,21 +64,27 @@ export default function EventDetailsPage() {
 
     // Check if event is paid
     if (event.isPaid && event.price > 0) {
-      Swal.fire({
+      const result = await Swal.fire({
         icon: 'info',
         title: 'Payment Required',
-        text: `This event requires a payment of ${formatCurrency(event.price)}`,
+        html: `
+          <div class="text-left">
+            <p class="mb-2">This event requires a payment of <strong>${formatCurrency(event.price)}</strong></p>
+            <p class="text-sm text-gray-600">You will be redirected to a secure payment page.</p>
+          </div>
+        `,
         showCancelButton: true,
         confirmButtonText: 'Proceed to Payment',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // TODO: Implement Stripe payment
-          Swal.fire('Info', 'Payment integration coming soon!', 'info');
-        }
+        cancelButtonText: 'Cancel',
       });
+
+      if (result.isConfirmed) {
+        await initiatePayment();
+      }
       return;
     }
 
+    // Free event - join directly
     setJoining(true);
     try {
       const response = await eventService.joinEvent(event._id);
@@ -91,6 +102,63 @@ export default function EventDetailsPage() {
     } finally {
       setJoining(false);
     }
+  };
+
+  const initiatePayment = async () => {
+    if (!event) return;
+
+    setProcessingPayment(true);
+    try {
+      const response = await paymentService.createPaymentIntent(event._id);
+      if (response.success && response.data) {
+        setPaymentClientSecret(response.data.clientSecret);
+        setShowPaymentModal(true);
+      }
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Payment Error',
+        text: error.response?.data?.message || 'Failed to initiate payment',
+      });
+    } finally {
+      setProcessingPayment(false);
+    }
+  };
+
+  const handlePaymentSuccess = async (paymentIntentId: string) => {
+    setShowPaymentModal(false);
+    setPaymentClientSecret('');
+    
+    // Call backend to confirm payment and join event
+    try {
+      const response = await paymentService.confirmPaymentAndJoin(paymentIntentId);
+      
+      if (response.success) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Payment Successful!',
+          text: 'You have successfully joined the event',
+          timer: 3000,
+        });
+        // Refresh event data to show updated participant count
+        fetchEvent();
+      } else {
+        throw new Error('Failed to join event');
+      }
+    } catch (error: any) {
+      console.error('Error confirming payment:', error);
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Payment Successful',
+        text: 'Payment completed but there was an issue joining the event. Please contact support.',
+      });
+      fetchEvent();
+    }
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPaymentModal(false);
+    setPaymentClientSecret('');
   };
 
   const handleLeaveEvent = async () => {
@@ -324,13 +392,14 @@ export default function EventDetailsPage() {
               ) : (
                 <button
                   onClick={handleJoinEvent}
-                  disabled={joining || isFull || event.status !== 'upcoming'}
+                  disabled={joining || processingPayment || isFull || event.status !== 'upcoming'}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {joining ? 'Joining...' : 
+                  {processingPayment ? 'Processing Payment...' :
+                   joining ? 'Joining...' : 
                    isFull ? 'Event Full' : 
                    event.status !== 'upcoming' ? 'Event Not Available' : 
-                   'Join Event'}
+                   event.isPaid && event.price > 0 ? `Join Event - ${formatCurrency(event.price)}` : 'Join Event'}
                 </button>
               )}
             </div>
@@ -353,6 +422,18 @@ export default function EventDetailsPage() {
           </div>
         )}
       </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && paymentClientSecret && event && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          clientSecret={paymentClientSecret}
+          amount={event.price}
+          eventTitle={event.title}
+          onSuccess={handlePaymentSuccess}
+          onClose={handlePaymentCancel}
+        />
+      )}
     </div>
   );
 }
