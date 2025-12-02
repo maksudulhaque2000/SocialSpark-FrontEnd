@@ -59,16 +59,17 @@ export default function LoginPage() {
       const response = await authService.login(formData);
       
       if (response.success && response.data) {
-        authService.saveAuthData(response.data.token, response.data.user);
+        const { token, user } = response.data;
+        authService.saveAuthData(token, user);
         
         await showSuccess(
           'Login Successful!',
-          `Welcome back, ${response.data.user.name}!`,
+          `Welcome back, ${user.name}!`,
           {
             timer: 1500,
             willClose: () => {
               // Redirect based on role
-              const role = response.data.user.role.toLowerCase();
+              const role = user.role.toLowerCase();
               router.push(`/dashboard/${role}`);
             },
           }

@@ -92,11 +92,12 @@ export default function RegisterPage() {
       const response = await authService.register(registerData);
 
       if (response.success && response.data) {
-        authService.saveAuthData(response.data.token, response.data.user);
+        const { token, user } = response.data;
+        authService.saveAuthData(token, user);
 
         await showSuccess(
           'Registration Successful!',
-          `Welcome to SocialSpark, ${response.data.user.name}!`,
+          `Welcome to SocialSpark, ${user.name}!`,
           {
             timer: 1500,
             willClose: () => {

@@ -154,7 +154,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
       {currentUser && (
         <form onSubmit={handleSubmitComment} className="mb-8">
           <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
               {currentUser.profileImage ? (
                 <img
                   src={currentUser.profileImage}
@@ -208,7 +208,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
             return (
               <div key={comment._id} className="border-b border-gray-200 pb-6 last:border-0">
                 <div className="flex gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                     {comment.userId.profileImage ? (
                       <img
                         src={comment.userId.profileImage}
