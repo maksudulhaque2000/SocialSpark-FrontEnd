@@ -14,6 +14,11 @@ export default function GoogleMap({ address, className = '', zoom = 15 }: Google
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const handleMapClick = () => {
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+  };
+
   useEffect(() => {
     const initMap = async () => {
       try {
@@ -97,7 +102,10 @@ export default function GoogleMap({ address, className = '', zoom = 15 }: Google
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center bg-gray-100 rounded-lg ${className}`}>
+      <div 
+        onClick={handleMapClick}
+        className={`flex items-center justify-center bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors ${className}`}
+      >
         <div className="text-center p-6">
           <svg
             className="w-12 h-12 text-gray-400 mx-auto mb-2"
@@ -119,13 +127,18 @@ export default function GoogleMap({ address, className = '', zoom = 15 }: Google
             />
           </svg>
           <p className="text-gray-600 text-sm">{error}</p>
+          <p className="text-blue-600 text-xs mt-2 font-semibold">Click to open in Google Maps</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`relative ${className}`}>
+    <div 
+      onClick={handleMapClick}
+      className={`relative cursor-pointer group ${className}`}
+      title="Click to open in Google Maps"
+    >
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg z-10">
           <div className="text-center">
@@ -134,7 +147,22 @@ export default function GoogleMap({ address, className = '', zoom = 15 }: Google
           </div>
         </div>
       )}
-      <div ref={mapRef} className={`rounded-lg ${className}`} style={{ minHeight: '300px' }} />
+      <div 
+        ref={mapRef} 
+        className={`rounded-lg ${className}`} 
+        style={{ minHeight: '300px' }} 
+      />
+      {/* Hover overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center pointer-events-none">
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white px-4 py-2 rounded-lg shadow-lg">
+          <p className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            Open in Google Maps
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
