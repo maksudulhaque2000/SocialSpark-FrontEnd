@@ -61,10 +61,10 @@ export default function UserDashboard() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
                 {user.profileImage ? (
                   <img
                     src={user.profileImage}
@@ -72,23 +72,23 @@ export default function UserDashboard() {
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <FiUser className="w-10 h-10 text-blue-600" />
+                  <FiUser className="w-8 h-8 sm:w-10 sm:h-10 text-gray-700" />
                 )}
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
-                <p className="text-gray-600">{user.email}</p>
-                <span className="inline-block mt-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{user.name}</h1>
+                <p className="text-sm sm:text-base text-gray-600 truncate">{user.email}</p>
+                <span className="inline-block mt-1 px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-xs sm:text-sm font-semibold">
                   {user.role}
                 </span>
               </div>
             </div>
             <Link
               href="/profile/edit"
-              className="flex items-center gap-2 px-4 py-2 border border-blue-600 rounded-lg hover:bg-gray-50 transition"
+              className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-700 rounded-lg hover:bg-gray-50 transition w-full sm:w-auto"
             >
-              <FiSettings className="w-6 h-6 text-blue-600" />
-              <span className="text-blue-600">Edit Profile</span>
+              <FiSettings className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+              <span className="text-gray-700">Edit Profile</span>
             </Link>
           </div>
         </div>
@@ -101,39 +101,39 @@ export default function UserDashboard() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-6">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Events Joined</p>
-                <p className="text-3xl font-bold text-gray-900">{joinedEvents.length}</p>
+                <p className="text-gray-600 text-xs sm:text-sm">Total Events Joined</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{joinedEvents.length}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <FiCalendar className="w-6 h-6 text-blue-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                <FiCalendar className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Upcoming Events</p>
-                <p className="text-3xl font-bold text-gray-900">{upcomingEvents.length}</p>
+                <p className="text-gray-600 text-xs sm:text-sm">Upcoming Events</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{upcomingEvents.length}</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <FiClock className="w-6 h-6 text-green-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 rounded-full flex items-center justify-center">
+                <FiClock className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Completed Events</p>
-                <p className="text-3xl font-bold text-gray-900">{pastEvents.length}</p>
+                <p className="text-gray-600 text-xs sm:text-sm">Completed Events</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{pastEvents.length}</p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <FiCalendar className="w-6 h-6 text-purple-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-400 rounded-full flex items-center justify-center">
+                <FiCalendar className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
             </div>
           </div>
@@ -141,15 +141,15 @@ export default function UserDashboard() {
         )}
 
         {/* Events Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">My Events</h2>
-            <div className="flex gap-2">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">My Events</h2>
+            <div className="flex gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setActiveTab('upcoming')}
-                className={`px-4 py-2 rounded-lg font-semibold transition ${
+                className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-lg font-semibold transition text-sm ${
                   activeTab === 'upcoming'
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-gray-800 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -157,9 +157,9 @@ export default function UserDashboard() {
               </button>
               <button
                 onClick={() => setActiveTab('past')}
-                className={`px-4 py-2 rounded-lg font-semibold transition ${
+                className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-lg font-semibold transition text-sm ${
                   activeTab === 'past'
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-gray-800 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -183,7 +183,7 @@ export default function UserDashboard() {
               </p>
               <Link
                 href="/events"
-                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                className="inline-block bg-gray-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-900 transition"
               >
                 Browse Events
               </Link>
@@ -194,11 +194,11 @@ export default function UserDashboard() {
                 <Link
                   key={event._id}
                   href={`/events/${event._id}`}
-                  className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition"
+                  className="block border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition"
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
                     {/* Event Image */}
-                    <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-full sm:w-20 md:w-24 h-40 sm:h-20 md:h-24 rounded-lg overflow-hidden shrink-0">
                       {event.bannerImage ? (
                         <img
                           src={event.bannerImage}
@@ -206,34 +206,34 @@ export default function UserDashboard() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                        <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
                           <span className="text-white text-2xl">🎉</span>
                         </div>
                       )}
                     </div>
 
                     {/* Event Info */}
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-1">
+                    <div className="flex-1 w-full">
+                      <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2">
                             {event.title}
                           </h3>
-                          <div className="space-y-1 text-sm text-gray-600">
+                          <div className="space-y-1 text-xs sm:text-sm text-gray-600">
                             <div className="flex items-center gap-2">
-                              <FiCalendar className="text-blue-600" />
-                              <span>{formatDate(event.date)} • {event.time}</span>
+                              <FiCalendar className="text-gray-700 shrink-0" />
+                              <span className="truncate">{formatDate(event.date)} • {event.time}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <FiMapPin className="text-red-600" />
-                              <span>{event.location}</span>
+                              <FiMapPin className="text-gray-700 shrink-0" />
+                              <span className="truncate">{event.location}</span>
                             </div>
                           </div>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          event.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
-                          event.status === 'ongoing' ? 'bg-green-100 text-green-800' :
-                          'bg-gray-100 text-gray-800'
+                        <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
+                          event.status === 'upcoming' ? 'bg-gray-200 text-gray-800' :
+                          event.status === 'ongoing' ? 'bg-gray-300 text-gray-900' :
+                          'bg-gray-400 text-white'
                         }`}>
                           {event.status}
                         </span>
@@ -247,18 +247,18 @@ export default function UserDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold text-blue-900 mb-3">Quick Actions</h3>
-          <div className="flex flex-wrap gap-3">
+        <div className="mt-6 bg-gray-100 border border-gray-300 rounded-lg p-4 sm:p-6">
+          <h3 className="font-semibold text-gray-900 mb-3">Quick Actions</h3>
+          <div className="flex flex-col sm:flex-row gap-3">
             <Link
               href="/events"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="flex-1 text-center px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition"
             >
               Browse Events
             </Link>
             <Link
               href="/profile/edit"
-              className="px-4 py-2 bg-white border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition"
+              className="flex-1 text-center px-4 py-2 bg-white border border-gray-700 text-gray-800 rounded-lg hover:bg-gray-50 transition"
             >
               Update Profile
             </Link>

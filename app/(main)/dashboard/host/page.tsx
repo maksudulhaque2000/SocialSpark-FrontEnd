@@ -243,10 +243,10 @@ export default function HostDashboard() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
                 {user.profileImage ? (
                   <img
                     src={user.profileImage}
@@ -254,30 +254,30 @@ export default function HostDashboard() {
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <FiUser className="w-8 h-8 text-blue-600" />
+                  <FiUser className="w-6 h-6 sm:w-8 sm:h-8 text-gray-700" />
                 )}
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
-                <p className="text-gray-600">{user.email}</p>
-                <span className="inline-block mt-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{user.name}</h1>
+                <p className="text-sm sm:text-base text-gray-600 truncate">{user.email}</p>
+                <span className="inline-block mt-1 px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-xs font-semibold">
                   {user.role}
                 </span>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
               <Link
                 href="/profile/edit"
-                className="flex items-center gap-2 px-4 py-2 border border-blue-600 rounded-lg hover:bg-gray-50 transition"
+                className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-700 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base"
               >
-                <FiSettings className="w-6 h-6 text-blue-600" />
-                <span className="text-blue-600">Edit Profile</span>
+                <FiSettings className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
+                <span className="text-gray-700">Edit Profile</span>
               </Link>
               <Link
                 href="/events/create"
-                className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
+                className="flex items-center justify-center gap-2 bg-gray-800 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-gray-900 transition font-semibold text-sm sm:text-base"
               >
-                <FiPlus />
+                <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Create Event</span>
               </Link>
             </div>
@@ -285,73 +285,73 @@ export default function HostDashboard() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6 mb-6">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Events</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalEvents}</p>
+                <p className="text-gray-600 text-xs sm:text-sm">Total Events</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.totalEvents}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <FiCalendar className="w-6 h-6 text-blue-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                <FiCalendar className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Participants</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalParticipants}</p>
+                <p className="text-gray-600 text-xs sm:text-sm">Total Participants</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.totalParticipants}</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <FiUsers className="w-6 h-6 text-green-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 rounded-full flex items-center justify-center">
+                <FiUsers className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Revenue</p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-gray-600 text-xs sm:text-sm">Total Revenue</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {revenueLoading ? '...' : formatCurrency(totalRevenue)}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                <FiDollarSign className="w-6 h-6 text-yellow-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-400 rounded-full flex items-center justify-center">
+                <FiDollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Upcoming</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.upcomingEvents}</p>
+                <p className="text-gray-600 text-xs sm:text-sm">Upcoming</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.upcomingEvents}</p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <FiCalendar className="w-6 h-6 text-purple-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-500 rounded-full flex items-center justify-center">
+                <FiCalendar className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Completed</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.completedEvents}</p>
+                <p className="text-gray-600 text-xs sm:text-sm">Completed</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.completedEvents}</p>
               </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                <FiCalendar className="w-6 h-6 text-yellow-600" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-600 rounded-full flex items-center justify-center">
+                <FiCalendar className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Events List */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Events</h2>
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Your Events</h2>
 
           {loading ? (
             <div className="space-y-4">
@@ -367,7 +367,7 @@ export default function HostDashboard() {
               <p className="text-gray-600 mb-4">You haven't created any events yet.</p>
               <Link
                 href="/events/create"
-                className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                className="inline-flex items-center gap-2 bg-gray-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-900 transition"
               >
                 <FiPlus />
                 <span>Create Your First Event</span>
@@ -378,11 +378,11 @@ export default function HostDashboard() {
               {hostedEvents.map((event) => (
                 <div
                   key={event._id}
-                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition"
+                  className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition"
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
                     {/* Event Image */}
-                    <div className="w-32 h-32 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-full sm:w-24 md:w-32 h-40 sm:h-24 md:h-32 rounded-lg overflow-hidden shrink-0">
                       {event.bannerImage ? (
                         <img
                           src={event.bannerImage}
@@ -390,48 +390,48 @@ export default function HostDashboard() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                        <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
                           <span className="text-white text-3xl">🎉</span>
                         </div>
                       )}
                     </div>
 
                     {/* Event Info */}
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-1">
+                    <div className="flex-1 w-full">
+                      <div className="flex flex-col sm:flex-row items-start justify-between gap-2 mb-3">
+                        <div className="flex-1">
+                          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2">
                             {event.title}
                           </h3>
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                            event.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
-                            event.status === 'ongoing' ? 'bg-green-100 text-green-800' :
-                            event.status === 'completed' ? 'bg-gray-100 text-gray-800' :
-                            'bg-red-100 text-red-800'
+                          <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
+                            event.status === 'upcoming' ? 'bg-gray-200 text-gray-800' :
+                            event.status === 'ongoing' ? 'bg-gray-300 text-gray-900' :
+                            event.status === 'completed' ? 'bg-gray-400 text-white' :
+                            'bg-gray-500 text-white'
                           }`}>
                             {event.status}
                           </span>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3 text-sm">
+                      <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-3 text-xs sm:text-sm">
                         <div>
                           <p className="text-gray-600">Date</p>
-                          <p className="font-semibold">{formatDate(event.date)}</p>
+                          <p className="font-semibold text-gray-900 truncate">{formatDate(event.date)}</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Participants</p>
-                          <p className="font-semibold">
+                          <p className="font-semibold text-gray-900">
                             {event.currentParticipants}/{event.maxParticipants}
                           </p>
                         </div>
                         <div>
                           <p className="text-gray-600">Category</p>
-                          <p className="font-semibold">{event.category}</p>
+                          <p className="font-semibold text-gray-900 truncate">{event.category}</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Price</p>
-                          <p className="font-semibold">
+                          <p className="font-semibold text-gray-900">
                             {event.isPaid ? formatCurrency(event.price) : 'Free'}
                           </p>
                         </div>
@@ -441,47 +441,48 @@ export default function HostDashboard() {
                       <div className="flex flex-wrap gap-2">
                         <Link
                           href={`/events/${event._id}`}
-                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+                          className="flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition text-xs sm:text-sm flex-1 sm:flex-initial min-w-0"
                         >
-                          <FiEye />
-                          <span>View</span>
+                          <FiEye className="w-4 h-4 shrink-0" />
+                          <span className="truncate">View</span>
                         </Link>
                         <button
                           onClick={() => handleViewParticipants(event._id, event.title)}
-                          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm"
+                          className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition text-xs sm:text-sm flex-1 sm:flex-initial min-w-0"
                         >
-                          <FiUsers />
-                          <span>Participants ({event.currentParticipants})</span>
+                          <FiUsers className="w-4 h-4 shrink-0" />
+                          <span className="hidden sm:inline">Participants</span>
+                          <span className="sm:hidden">({event.currentParticipants})</span>
                         </button>
                         {event.isPaid && (
                           <button
                             onClick={() => handleViewRevenue(event._id, event.title)}
-                            className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm"
+                            className="flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-xs sm:text-sm flex-1 sm:flex-initial min-w-0"
                           >
-                            <FiDollarSign />
-                            <span>Revenue</span>
+                            <FiDollarSign className="w-4 h-4 shrink-0" />
+                            <span className="truncate">Revenue</span>
                           </button>
                         )}
                         <Link
                           href={`/events/${event._id}/edit`}
-                          className="flex items-center gap-2 px-4 py-2 border border-gray-600 text-gray-800 rounded-lg hover:bg-gray-50 transition text-sm"
+                          className="flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 border border-gray-600 text-gray-800 rounded-lg hover:bg-gray-50 transition text-xs sm:text-sm flex-1 sm:flex-initial min-w-0"
                         >
-                          <FiEdit />
-                          <span>Edit</span>
+                          <FiEdit className="w-4 h-4 shrink-0" />
+                          <span className="truncate">Edit</span>
                         </Link>
                         <button
                           onClick={() => handleStatusChange(event._id, event.title, event.status)}
-                          className="flex items-center gap-2 px-4 py-2 border border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition text-sm"
+                          className="flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 border border-gray-500 text-gray-700 rounded-lg hover:bg-gray-100 transition text-xs sm:text-sm flex-1 sm:flex-initial min-w-0"
                         >
-                          <FiSettings />
-                          <span>Status</span>
+                          <FiSettings className="w-4 h-4 shrink-0" />
+                          <span className="truncate">Status</span>
                         </button>
                         <button
                           onClick={() => handleDeleteEvent(event._id, event.title)}
-                          className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm"
+                          className="flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 border border-gray-700 text-gray-800 rounded-lg hover:bg-gray-100 transition text-xs sm:text-sm flex-1 sm:flex-initial min-w-0"
                         >
-                          <FiTrash2 />
-                          <span>Delete</span>
+                          <FiTrash2 className="w-4 h-4 shrink-0" />
+                          <span className="truncate">Delete</span>
                         </button>
                       </div>
                     </div>

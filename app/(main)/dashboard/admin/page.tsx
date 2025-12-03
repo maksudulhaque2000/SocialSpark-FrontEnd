@@ -84,10 +84,10 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
                 {user.profileImage ? (
                   <img
                     src={user.profileImage}
@@ -95,141 +95,141 @@ export default function AdminDashboard() {
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <FiShield className="w-8 h-8 text-purple-600" />
+                  <FiShield className="w-6 h-6 sm:w-8 sm:h-8 text-gray-700" />
                 )}
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
-                <p className="text-gray-600">{user.email}</p>
-                <span className="inline-block mt-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{user.name}</h1>
+                <p className="text-sm sm:text-base text-gray-600 truncate">{user.email}</p>
+                <span className="inline-block mt-1 px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-xs sm:text-sm font-semibold">
                   {user.role} - Administrator
                 </span>
               </div>
             </div>
             <Link
               href="/profile/edit"
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-900"
+              className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-700 rounded-lg hover:bg-gray-50 transition text-gray-900 w-full sm:w-auto"
             >
-              <FiSettings />
+              <FiSettings className="w-5 h-5" />
               <span>Edit Profile</span>
             </Link>
           </div>
           <div className="mt-4 pt-4 border-t border-gray-200">
-            <p className="text-gray-700 font-medium">Platform Management Dashboard</p>
-            <p className="text-gray-600 text-sm">Manage users, events, and monitor platform activity</p>
+            <p className="text-gray-900 font-medium text-sm sm:text-base">Platform Management Dashboard</p>
+            <p className="text-gray-600 text-xs sm:text-sm">Manage users, events, and monitor platform activity</p>
           </div>
         </div>
 
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800"></div>
           </div>
         ) : stats ? (
           <>
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6">
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium">Total Users</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.users.total}</p>
-                    <p className="text-green-600 text-sm mt-1">
+                    <p className="text-gray-600 text-xs sm:text-sm font-medium">Total Users</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.users.total}</p>
+                    <p className="text-gray-700 text-xs sm:text-sm mt-1 font-medium">
                       +{stats.users.newThisMonth} this month
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <FiUsers className="w-6 h-6 text-blue-600" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                    <FiUsers className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium">Total Events</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.events.total}</p>
-                    <p className="text-green-600 text-sm mt-1">
+                    <p className="text-gray-600 text-xs sm:text-sm font-medium">Total Events</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.events.total}</p>
+                    <p className="text-gray-700 text-xs sm:text-sm mt-1 font-medium">
                       +{stats.events.newThisMonth} this month
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <FiCalendar className="w-6 h-6 text-green-600" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 rounded-full flex items-center justify-center">
+                    <FiCalendar className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium">Pending Approval</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.events.pendingApproval}</p>
-                    <p className="text-orange-600 text-sm mt-1">Needs Review</p>
+                    <p className="text-gray-600 text-xs sm:text-sm font-medium">Pending Approval</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.events.pendingApproval}</p>
+                    <p className="text-gray-700 text-xs sm:text-sm mt-1 font-medium">Needs Review</p>
                   </div>
-                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                    <FiClock className="w-6 h-6 text-orange-600" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-400 rounded-full flex items-center justify-center">
+                    <FiClock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium">Active Hosts</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.users.hosts}</p>
-                    <p className="text-blue-600 text-sm mt-1">Event Creators</p>
+                    <p className="text-gray-600 text-xs sm:text-sm font-medium">Active Hosts</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.users.hosts}</p>
+                    <p className="text-gray-700 text-xs sm:text-sm mt-1 font-medium">Event Creators</p>
                   </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <FiTrendingUp className="w-6 h-6 text-purple-600" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-500 rounded-full flex items-center justify-center">
+                    <FiTrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Secondary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">User Status</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">User Status</h3>
                   <FiUsers className="text-gray-400" />
                 </div>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Active Users</span>
-                    <span className="font-semibold text-green-600">{stats.users.active}</span>
+                    <span className="font-semibold text-gray-900">{stats.users.active}</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Blocked Users</span>
-                    <span className="font-semibold text-red-600">{stats.users.blocked}</span>
+                    <span className="font-semibold text-gray-700">{stats.users.blocked}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Event Status</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Event Status</h3>
                   <FiCalendar className="text-gray-400" />
                 </div>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Upcoming</span>
-                    <span className="font-semibold text-blue-600">{stats.events.upcoming}</span>
+                    <span className="font-semibold text-gray-900">{stats.events.upcoming}</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Completed</span>
-                    <span className="font-semibold text-gray-600">{stats.events.completed}</span>
+                    <span className="font-semibold text-gray-700">{stats.events.completed}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Top Categories</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Top Categories</h3>
                   <FiTrendingUp className="text-gray-400" />
                 </div>
                 <div className="space-y-2">
                   {stats.categoryDistribution.slice(0, 3).map((cat, index) => (
                     <div key={index} className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600">{cat._id}</span>
+                      <span className="text-gray-600 truncate">{cat._id}</span>
                       <span className="font-semibold text-gray-900">{cat.count}</span>
                     </div>
                   ))}
@@ -238,19 +238,19 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
                 <div className="space-y-3">
                   <Link
                     href="/admin/users"
                     className="block w-full text-left px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-900"
                   >
                     <div className="flex items-center gap-3">
-                      <FiUsers className="text-blue-600" />
-                      <div>
-                        <p className="font-semibold">Manage Users</p>
-                        <p className="text-sm text-gray-600">View, block, and manage user accounts</p>
+                      <FiUsers className="text-gray-700 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm sm:text-base">Manage Users</p>
+                        <p className="text-xs sm:text-sm text-gray-600 truncate">View, block, and manage user accounts</p>
                       </div>
                     </div>
                   </Link>
@@ -259,10 +259,10 @@ export default function AdminDashboard() {
                     className="block w-full text-left px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-900"
                   >
                     <div className="flex items-center gap-3">
-                      <FiCalendar className="text-green-600" />
-                      <div>
-                        <p className="font-semibold">Manage Events</p>
-                        <p className="text-sm text-gray-600">Review, approve, and moderate events</p>
+                      <FiCalendar className="text-gray-700 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm sm:text-base">Manage Events</p>
+                        <p className="text-xs sm:text-sm text-gray-600 truncate">Review, approve, and moderate events</p>
                       </div>
                     </div>
                   </Link>
@@ -271,22 +271,22 @@ export default function AdminDashboard() {
                     className="block w-full text-left px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-900"
                   >
                     <div className="flex items-center gap-3">
-                      <FiCreditCard className="text-purple-600" />
-                      <div>
-                        <p className="font-semibold">Subscription Plans</p>
-                        <p className="text-sm text-gray-600">Manage pricing, discounts, and features</p>
+                      <FiCreditCard className="text-gray-700 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm sm:text-base">Subscription Plans</p>
+                        <p className="text-xs sm:text-sm text-gray-600 truncate">Manage pricing, discounts, and features</p>
                       </div>
                     </div>
                   </Link>
                   <Link
                     href="/admin/pending"
-                    className="block w-full text-left px-4 py-3 border border-orange-300 bg-orange-50 rounded-lg hover:bg-orange-100 transition text-gray-900"
+                    className="block w-full text-left px-4 py-3 border border-gray-400 bg-gray-100 rounded-lg hover:bg-gray-200 transition text-gray-900"
                   >
                     <div className="flex items-center gap-3">
-                      <FiAlertCircle className="text-orange-600" />
-                      <div>
-                        <p className="font-semibold text-orange-900">Pending Approvals</p>
-                        <p className="text-sm text-orange-700">
+                      <FiAlertCircle className="text-gray-700 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base">Pending Approvals</p>
+                        <p className="text-xs sm:text-sm text-gray-700 truncate">
                           {stats.events.pendingApproval} events waiting for approval
                         </p>
                       </div>
@@ -294,13 +294,13 @@ export default function AdminDashboard() {
                   </Link>
                   <Link
                     href="/dashboard/admin/reviews"
-                    className="block w-full text-left px-4 py-3 border border-purple-300 bg-purple-50 rounded-lg hover:bg-purple-100 transition text-gray-900"
+                    className="block w-full text-left px-4 py-3 border border-gray-500 bg-gray-200 rounded-lg hover:bg-gray-300 transition text-gray-900"
                   >
                     <div className="flex items-center gap-3">
-                      <FiCheckCircle className="text-purple-600" />
-                      <div>
-                        <p className="font-semibold text-purple-900">Website Reviews</p>
-                        <p className="text-sm text-purple-700">
+                      <FiCheckCircle className="text-gray-700 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base">Website Reviews</p>
+                        <p className="text-xs sm:text-sm text-gray-700 truncate">
                           {stats.reviews?.pendingReviews || 0} reviews pending approval
                         </p>
                       </div>
@@ -309,22 +309,22 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {stats.recentUsers.slice(0, 3).map((recentUser, index) => (
-                    <div key={index} className="border-l-4 border-blue-500 pl-4 py-2">
+                    <div key={index} className="border-l-4 border-gray-600 pl-4 py-2">
                       <p className="font-semibold text-sm text-gray-900">New user registered</p>
-                      <p className="text-xs text-gray-600">{recentUser.name} - {recentUser.email}</p>
+                      <p className="text-xs text-gray-700 truncate">{recentUser.name} - {recentUser.email}</p>
                       <p className="text-xs text-gray-500">
                         {new Date(recentUser.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   ))}
                   {stats.recentEvents.slice(0, 2).map((event, index) => (
-                    <div key={index} className="border-l-4 border-green-500 pl-4 py-2">
+                    <div key={index} className="border-l-4 border-gray-700 pl-4 py-2">
                       <p className="font-semibold text-sm text-gray-900">New event created</p>
-                      <p className="text-xs text-gray-600">{event.title}</p>
+                      <p className="text-xs text-gray-700 truncate">{event.title}</p>
                       <p className="text-xs text-gray-500">
                         {new Date(event.createdAt).toLocaleDateString()}
                       </p>
