@@ -116,11 +116,11 @@ export default function Home() {
   };
 
   const categories = [
-    { name: 'Concerts', icon: '🎵', color: 'from-pink-500 to-rose-500' },
-    { name: 'Sports', icon: '⚽', color: 'from-green-500 to-emerald-500' },
-    { name: 'Hiking', icon: '🏔️', color: 'from-blue-500 to-cyan-500' },
-    { name: 'Tech Meetups', icon: '💻', color: 'from-purple-500 to-indigo-500' },
-    { name: 'Gaming', icon: '🎮', color: 'from-orange-500 to-red-500' }
+    { name: 'Concerts', icon: '🎵', color: 'from-gray-50 to-gray-100' },
+    { name: 'Sports', icon: '⚽', color: 'from-green-50 to-emerald-100' },
+    { name: 'Hiking', icon: '🏔️', color: 'from-blue-50 to-cyan-100' },
+    { name: 'Tech Meetups', icon: '💻', color: 'from-purple-50 to-indigo-5=100' },
+    { name: 'Gaming', icon: '🎮', color: 'from-orange-50 to-red-100' }
   ];
 
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -216,7 +216,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+      <section className="bg-gradient-to-r from-amber-50 to-amber-100 py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
@@ -237,7 +237,7 @@ export default function Home() {
                 {user.role === 'Host' ? (
                   <Link
                     href="/events/create"
-                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                    className="bg-transparent border-2 border-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                   >
                     Create Event
                     <FiCalendar className="ml-2" />
@@ -245,7 +245,7 @@ export default function Home() {
                 ) : user.role === 'Admin' ? (
                   <Link
                     href="/admin/events"
-                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                    className="bg-transparent border-2 border-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                   >
                     Admin Dashboard
                     <FiAward className="ml-2" />
@@ -253,7 +253,7 @@ export default function Home() {
                 ) : (
                   <Link
                     href="/dashboard/user"
-                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                    className="bg-transparent border-2 border-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                   >
                     My Dashboard
                     <FiUsers className="ml-2" />
@@ -271,7 +271,7 @@ export default function Home() {
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition"
+                  className="bg-transparent border-2 border-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition"
                 >
                   Join Now
                 </Link>
@@ -282,7 +282,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
@@ -387,7 +387,7 @@ export default function Home() {
                   href={`/events/${event._id}`}
                   className="bg-white rounded-lg shadow-md hover:shadow-xl transition overflow-hidden group"
                 >
-                  <div className="h-48 bg-gradient-to-br from-blue-400 to-purple-500 relative overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-amber-50 to-purple-100 relative overflow-hidden">
                     {event.image ? (
                       <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-300" />
                     ) : (
@@ -425,7 +425,7 @@ export default function Home() {
       </section>
 
       {/* Top Hosts */}
-      <section className="py-16 bg-amber-50">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Top Rated Hosts</h2>
           {loading ? (
@@ -440,7 +440,7 @@ export default function Home() {
                 <Link
                   key={host._id}
                   href={`/host/${host._id}`}
-                  className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition transform hover:scale-105"
+                  className="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition transform hover:scale-105 bg-gradient-to-br from-amber-50 to-purple-100"
                 >
                   <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl overflow-hidden">
                     {host.profileImage ? (
@@ -474,7 +474,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <section className="py-16 bg-gradient-to-r from-amber-50 to-amber-100 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
             <h2 className="text-3xl font-bold">What Our Users Say</h2>
@@ -540,14 +540,14 @@ export default function Home() {
                 <>
                   <button
                     onClick={prevSlide}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-black/20 hover:bg-black/30 backdrop-blur-sm text-white p-3 rounded-full transition"
                     aria-label="Previous reviews"
                   >
                     <FiChevronLeft className="w-6 h-6" />
                   </button>
                   <button
                     onClick={nextSlide}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-black/20 hover:bg-black/30 backdrop-blur-sm text-white p-3 rounded-full transition"
                     aria-label="Next reviews"
                   >
                     <FiChevronRight className="w-6 h-6" />
@@ -590,7 +590,7 @@ export default function Home() {
       </section>
 
       {/* Popular Events by Category */}
-      <section className="py-16">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
             <h2 className="text-3xl font-bold">Most Popular Events</h2>
@@ -612,7 +612,7 @@ export default function Home() {
                   href={`/events/${event._id}`}
                   className="bg-white rounded-lg shadow-md hover:shadow-xl transition overflow-hidden group"
                 >
-                  <div className="h-40 bg-gradient-to-br from-purple-400 to-pink-500 relative overflow-hidden">
+                  <div className="h-40 bg-gradient-to-br from-amber-50 to-purple-100 relative overflow-hidden">
                     {event.image ? (
                       <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-300" />
                     ) : (
@@ -760,7 +760,7 @@ export default function Home() {
                   href={`/events/${event._id}`}
                   className="flex flex-col md:flex-row bg-white rounded-lg shadow-md hover:shadow-xl transition overflow-hidden group"
                 >
-                  <div className="md:w-1/4 h-48 md:h-auto bg-gradient-to-br from-blue-400 to-purple-500 relative">
+                  <div className="md:w-1/4 h-48 md:h-auto bg-gradient-to-br from-amber-50 to-purple-100 relative">
                     {event.image ? (
                       <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-300" />
                     ) : (
@@ -818,7 +818,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {user ? (
             <>
@@ -835,7 +835,7 @@ export default function Home() {
                 {user.role === 'Host' && (
                   <Link
                     href="/events/create"
-                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                    className="bg-transparent border-2 border-gray-300 text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                   >
                     Create New Event
                     <FiCalendar className="ml-2" />
@@ -844,7 +844,7 @@ export default function Home() {
                 {user.role === 'Admin' && (
                   <Link
                     href="/admin/events"
-                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                    className="bg-transparent border-2 border-gray-300 text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                   >
                     Manage Events
                     <FiAward className="ml-2" />
@@ -866,7 +866,7 @@ export default function Home() {
                 </Link>
                 <Link
                   href="/events"
-                  className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  className="bg-transparent border-2 border-gray-300 text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                 >
                   Browse Events
                 </Link>

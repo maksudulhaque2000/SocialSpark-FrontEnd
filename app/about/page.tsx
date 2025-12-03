@@ -88,7 +88,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+      <section className="bg-gradient-to-r from-amber-50 to-amber-100 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
@@ -241,7 +241,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+      <section className="bg-gradient-to-r from-amber-50 to-amber-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Join Our Community</h2>
           <p className="text-xl mb-8 text-blue-100">
@@ -260,21 +260,21 @@ export default function AboutPage() {
                 {user.role === 'Host' ? (
                   <Link
                     href="/events/create"
-                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                    className="bg-transparent border-2 border-gray-600 text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                   >
                     Create Event
                   </Link>
                 ) : user.role === 'Admin' ? (
                   <Link
                     href="/admin/events"
-                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                    className="bg-transparent border-2 border-gray-600 text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                   >
                     Manage Events
                   </Link>
                 ) : (
                   <Link
                     href="/dashboard/user"
-                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                    className="bg-transparent border-2 border-gray-600 text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                   >
                     My Dashboard
                   </Link>
@@ -290,7 +290,7 @@ export default function AboutPage() {
                 </Link>
                 <Link
                   href="/events"
-                  className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
+                  className="bg-transparent border-2 border-gray-600 text-black px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition inline-flex items-center justify-center"
                 >
                   Browse Events
                 </Link>
