@@ -72,14 +72,15 @@ export default function HostProfilePage() {
       if (response.success && response.data) {
         if (response.data.exists && response.data.conversation) {
           const conv = response.data.conversation;
+          const requestedById = typeof conv.requestedBy === 'string' 
+            ? conv.requestedBy 
+            : (conv.requestedBy as User)._id || (conv.requestedBy as User).id;
+          
           setConversationStatus({
             exists: true,
             status: conv.status,
             conversationId: conv._id,
-            isPending: conv.status === 'pending' && 
-                      typeof conv.requestedBy === 'string' 
-                      ? conv.requestedBy === currentUser?.id
-                      : conv.requestedBy._id === currentUser?.id || conv.requestedBy.id === currentUser?.id,
+            isPending: conv.status === 'pending' && requestedById === currentUser?.id,
           });
         }
       }
