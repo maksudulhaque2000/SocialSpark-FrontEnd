@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook } from 'react-icons/fa';
 import { authService } from '@/lib/auth';
 import { getErrorMessage, isValidEmail, isValidPassword } from '@/utils/helpers';
-import { showSuccess, showError, showInfo } from '@/utils/sweetalert';
+import { showSuccess, showError } from '@/utils/sweetalert';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -117,8 +118,18 @@ export default function RegisterPage() {
     }
   };
 
-  const handleSocialLogin = (provider: 'google' | 'facebook') => {
-    showInfo('Coming Soon', `${provider} registration will be available soon!`);
+  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    try {
+      setLoading(true);
+      await signIn(provider, {
+        callbackUrl: '/dashboard',
+        redirect: true,
+      });
+    } catch (error) {
+      console.error(`${provider} registration error:`, error);
+      showError('Registration Failed', `Failed to register with ${provider}`);
+      setLoading(false);
+    }
   };
 
   return (
