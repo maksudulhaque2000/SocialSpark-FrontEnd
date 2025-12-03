@@ -69,6 +69,30 @@ export interface WebsiteReview {
   updatedAt: string;
 }
 
+export interface Conversation {
+  _id: string;
+  participants: User[];
+  status: 'pending' | 'accepted' | 'rejected';
+  requestedBy: User | string;
+  requestedTo: User | string;
+  lastMessageAt?: string;
+  lastMessage?: Message;
+  unreadCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Message {
+  _id: string;
+  conversationId: string;
+  senderId: User | string;
+  receiverId: User | string;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PlatformStats {
   totalUsers: number;
   totalHosts: number;

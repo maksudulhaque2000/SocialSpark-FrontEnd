@@ -1,28 +1,49 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   FiUser,
   FiMail,
   FiCalendar,
   FiUsers,
+  FiMessageCircle,
 } from 'react-icons/fi';
 import { userService } from '@/lib/users';
+import { conversationService } from '@/lib/conversations';
+import { authService } from '@/lib/auth';
 import { User } from '@/types';
 import { formatDate } from '@/utils/helpers';
 import Swal from 'sweetalert2';
 
 export default function UserProfilePage() {
   const params = useParams();
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [conversationStatus, setConversationStatus] = useState<{
+    exists: boolean;
+    status?: 'pending' | 'accepted' | 'rejected';
+    conversationId?: string;
+    isPending?: boolean;
+  }>({ exists: false });
+  const [sendingRequest, setSendingRequest] = useState(false);
 
   useEffect(() => {
+    const savedUser = authService.getSavedUser();
+    setCurrentUser(savedUser);
     fetchUserProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
+
+  useEffect(() => {
+    if (currentUser && user && currentUser.id !== user.id) {
+      checkConversation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, user]);
 
   const fetchUserProfile = async () => {
     try {
@@ -34,6 +55,104 @@ export default function UserProfilePage() {
       Swal.fire('Error', 'Failed to load user profile', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkConversation = async () => {
+    if (!user) return;
+    
+    try {
+      const response = await conversationService.checkConversation(user.id);
+      if (response.success && response.data) {
+        if (response.data.exists && response.data.conversation) {
+          const conv = response.data.conversation;
+          setConversationStatus({
+            exists: true,
+            status: conv.status,
+            conversationId: conv._id,
+            isPending: conv.status === 'pending' && 
+                      typeof conv.requestedBy === 'string' 
+                      ? conv.requestedBy === currentUser?.id
+                      : conv.requestedBy._id === currentUser?.id || conv.requestedBy.id === currentUser?.id,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to check conversation:', error);
+    }
+  };
+
+  const handleSendMessageRequest = async () => {
+    if (!user) return;
+    
+    try {
+      setSendingRequest(true);
+      const response = await conversationService.sendRequest(user.id);
+      
+      if (response.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Request Sent',
+          text: 'Message request sent successfully',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        
+        // Update conversation status
+        setConversationStatus({
+          exists: true,
+          status: 'pending',
+          isPending: true,
+        });
+      }
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || 'Failed to send message request';
+      Swal.fire('Error', errorMessage, 'error');
+    } finally {
+      setSendingRequest(false);
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    if (!user) return;
+    
+    const result = await Swal.fire({
+      title: 'Cancel Request?',
+      text: 'Are you sure you want to cancel this message request?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel it',
+      confirmButtonColor: '#dc2626',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      setSendingRequest(true);
+      const response = await conversationService.cancelRequest(user.id);
+      
+      if (response.success) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Request Cancelled',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        
+        // Update conversation status
+        setConversationStatus({ exists: false });
+      }
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || 'Failed to cancel message request';
+      Swal.fire('Error', errorMessage, 'error');
+    } finally {
+      setSendingRequest(false);
+    }
+  };
+
+  const handleMessageClick = () => {
+    if (conversationStatus.status === 'accepted' && conversationStatus.conversationId) {
+      router.push(`/messages/${conversationStatus.conversationId}`);
     }
   };
 
@@ -58,6 +177,8 @@ export default function UserProfilePage() {
     );
   }
 
+  const isOwnProfile = currentUser?.id === user.id;
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,7 +186,7 @@ export default function UserProfilePage() {
         <div className="bg-white rounded-lg shadow-md p-8 mb-6">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {/* Profile Image */}
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-4xl overflow-hidden flex-shrink-0">
+            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-4xl overflow-hidden shrink-0">
               {user.profileImage ? (
                 <img
                   src={user.profileImage}
@@ -121,6 +242,39 @@ export default function UserProfilePage() {
                   <span>Member since {formatDate(user.createdAt, 'MMMM yyyy')}</span>
                 </div>
               </div>
+
+              {/* Message Button - Only show for other users when logged in */}
+              {!isOwnProfile && currentUser ? (
+                <div className="mt-6">
+                  {conversationStatus.status === 'accepted' ? (
+                    <button
+                      onClick={handleMessageClick}
+                      className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition font-semibold"
+                    >
+                      <FiMessageCircle className="w-5 h-5" />
+                      <span>Message</span>
+                    </button>
+                  ) : conversationStatus.isPending ? (
+                    <button
+                      onClick={handleCancelRequest}
+                      disabled={sendingRequest}
+                      className="inline-flex items-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <FiMessageCircle className="w-5 h-5" />
+                      <span>{sendingRequest ? 'Cancelling...' : 'Cancel Message Request'}</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleSendMessageRequest}
+                      disabled={sendingRequest}
+                      className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <FiMessageCircle className="w-5 h-5" />
+                      <span>{sendingRequest ? 'Sending...' : 'Send Message'}</span>
+                    </button>
+                  )}
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

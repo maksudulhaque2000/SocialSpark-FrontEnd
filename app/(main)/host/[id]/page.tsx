@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   FiUser,
@@ -12,21 +12,44 @@ import {
   FiMail,
   FiAward,
   FiTrendingUp,
+  FiMessageCircle,
 } from 'react-icons/fi';
 import { userService } from '@/lib/users';
+import { conversationService } from '@/lib/conversations';
+import { authService } from '@/lib/auth';
 import { HostProfile } from '@/lib/users';
+import { User } from '@/types';
 import { formatDate } from '@/utils/helpers';
 import Swal from 'sweetalert2';
 
 export default function HostProfilePage() {
   const params = useParams();
+  const router = useRouter();
   const [hostProfile, setHostProfile] = useState<HostProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'events' | 'reviews'>('events');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [conversationStatus, setConversationStatus] = useState<{
+    exists: boolean;
+    status?: 'pending' | 'accepted' | 'rejected';
+    conversationId?: string;
+    isPending?: boolean;
+  }>({ exists: false });
+  const [sendingRequest, setSendingRequest] = useState(false);
 
   useEffect(() => {
+    const savedUser = authService.getSavedUser();
+    setCurrentUser(savedUser);
     fetchHostProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
+
+  useEffect(() => {
+    if (currentUser && hostProfile && currentUser.id !== hostProfile.profile.id) {
+      checkConversation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, hostProfile]);
 
   const fetchHostProfile = async () => {
     try {
@@ -38,6 +61,90 @@ export default function HostProfilePage() {
       Swal.fire('Error', 'Failed to load host profile', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkConversation = async () => {
+    if (!hostProfile) return;
+    
+    try {
+      const response = await conversationService.checkConversation(hostProfile.profile.id);
+      if (response.success && response.data) {
+        if (response.data.exists && response.data.conversation) {
+          const conv = response.data.conversation;
+          setConversationStatus({
+            exists: true,
+            status: conv.status,
+            conversationId: conv._id,
+            isPending: conv.status === 'pending' && 
+                      typeof conv.requestedBy === 'string' 
+                      ? conv.requestedBy === currentUser?.id
+                      : conv.requestedBy._id === currentUser?.id || conv.requestedBy.id === currentUser?.id,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to check conversation:', error);
+    }
+  };
+
+  const handleSendMessageRequest = async () => {
+    if (!hostProfile) return;
+    
+    try {
+      setSendingRequest(true);
+      const response = await conversationService.sendRequest(hostProfile.profile.id);
+      
+      if (response.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Request Sent',
+          text: 'Message request sent successfully',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        
+        await checkConversation();
+      } else {
+        Swal.fire('Error', response.message || 'Failed to send message request', 'error');
+      }
+    } catch (error: any) {
+      Swal.fire('Error', error.response?.data?.message || 'Failed to send message request', 'error');
+    } finally {
+      setSendingRequest(false);
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    if (!hostProfile) return;
+    
+    try {
+      setSendingRequest(true);
+      const response = await conversationService.cancelRequest(hostProfile.profile.id);
+      
+      if (response.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Request Cancelled',
+          text: 'Message request cancelled successfully',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        
+        setConversationStatus({ exists: false });
+      } else {
+        Swal.fire('Error', response.message || 'Failed to cancel message request', 'error');
+      }
+    } catch (error: any) {
+      Swal.fire('Error', error.response?.data?.message || 'Failed to cancel message request', 'error');
+    } finally {
+      setSendingRequest(false);
+    }
+  };
+
+  const handleMessageClick = () => {
+    if (conversationStatus.conversationId) {
+      router.push(`/messages/${conversationStatus.conversationId}`);
     }
   };
 
@@ -112,7 +219,7 @@ export default function HostProfilePage() {
               )}
 
               {profile.interests && profile.interests.length > 0 && (
-                <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
                   {profile.interests.map((interest, index) => (
                     <span
                       key={index}
@@ -123,6 +230,39 @@ export default function HostProfilePage() {
                   ))}
                 </div>
               )}
+
+              {/* Message Button - Only show for other users when logged in */}
+              {currentUser && currentUser.id !== profile.id ? (
+                <div className="mt-6">
+                  {conversationStatus.status === 'accepted' ? (
+                    <button
+                      onClick={handleMessageClick}
+                      className="inline-flex items-center gap-2 bg-purple-400 text-white px-6 py-3 rounded-lg hover:bg-purple-500 transition font-semibold"
+                    >
+                      <FiMessageCircle className="w-5 h-5" />
+                      <span>Message</span>
+                    </button>
+                  ) : conversationStatus.isPending ? (
+                    <button
+                      onClick={handleCancelRequest}
+                      disabled={sendingRequest}
+                      className="inline-flex items-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <FiMessageCircle className="w-5 h-5" />
+                      <span>{sendingRequest ? 'Cancelling...' : 'Cancel Message Request'}</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleSendMessageRequest}
+                      disabled={sendingRequest}
+                      className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <FiMessageCircle className="w-5 h-5" />
+                      <span>{sendingRequest ? 'Sending...' : 'Send Message'}</span>
+                    </button>
+                  )}
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

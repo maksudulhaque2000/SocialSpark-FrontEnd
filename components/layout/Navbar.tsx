@@ -3,13 +3,17 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FiMenu, FiX, FiUser, FiLogOut } from 'react-icons/fi';
+import { FiMenu, FiX, FiUser, FiLogOut, FiMessageCircle } from 'react-icons/fi';
 import { authService } from '@/lib/auth';
+import { messageService } from '@/lib/messages';
+import { conversationService } from '@/lib/conversations';
 import { User } from '@/types';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [requestCount, setRequestCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,6 +24,10 @@ export default function Navbar() {
     const handleAuthChange = () => {
       const updatedUser = authService.getSavedUser();
       setUser(updatedUser);
+      if (!updatedUser) {
+        setUnreadCount(0);
+        setRequestCount(0);
+      }
     };
 
     window.addEventListener('auth-change', handleAuthChange);
@@ -29,8 +37,49 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      fetchCounts();
+      // Poll for counts every 30 seconds
+      const interval = setInterval(fetchCounts, 30000);
+      
+      // Listen for unread count changes
+      const handleUnreadCountChanged = () => {
+        fetchCounts();
+      };
+      window.addEventListener('unread-count-changed', handleUnreadCountChanged);
+      
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener('unread-count-changed', handleUnreadCountChanged);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  const fetchCounts = async () => {
+    try {
+      const [unreadResponse, requestsResponse] = await Promise.all([
+        messageService.getUnreadCount(),
+        conversationService.getRequests(),
+      ]);
+      
+      if (unreadResponse.success && unreadResponse.data) {
+        setUnreadCount(unreadResponse.data.unreadCount);
+      }
+      
+      if (requestsResponse.success && requestsResponse.data) {
+        setRequestCount(requestsResponse.data.requests.length);
+      }
+    } catch (error) {
+      console.error('Failed to fetch counts:', error);
+    }
+  };
+
   const handleLogout = () => {
     authService.logout();
+    setUnreadCount(0);
+    setRequestCount(0);
     router.push('/login');
   };
 
@@ -70,6 +119,18 @@ export default function Navbar() {
 
             {user ? (
               <div className="flex items-center space-x-4">
+                <Link
+                  href="/messages"
+                  className="relative text-gray-700 hover:text-purple-600 transition"
+                  title={`${unreadCount} unread message${unreadCount !== 1 ? 's' : ''}, ${requestCount} pending request${requestCount !== 1 ? 's' : ''}`}
+                >
+                  <FiMessageCircle className="w-6 h-6" />
+                  {(unreadCount + requestCount) > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {(unreadCount + requestCount) > 9 ? '9+' : (unreadCount + requestCount)}
+                    </span>
+                  )}
+                </Link>
                 <Link
                   href={`/dashboard/${user.role.toLowerCase()}`}
                   className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition"
@@ -161,6 +222,18 @@ export default function Navbar() {
 
             {user ? (
               <>
+                <Link
+                  href="/messages"
+                  className="flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span>Messages</span>
+                  {(unreadCount + requestCount) > 0 && (
+                    <span className="bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {(unreadCount + requestCount) > 9 ? '9+' : (unreadCount + requestCount)}
+                    </span>
+                  )}
+                </Link>
                 <Link
                   href={`/dashboard/${user.role.toLowerCase()}`}
                   className="block px-3 py-2 text-gray-700 hover:bg-blue-50 rounded-md"
