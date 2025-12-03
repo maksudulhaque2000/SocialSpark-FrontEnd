@@ -13,6 +13,8 @@ import Swal from 'sweetalert2';
 import EventComments from '@/components/EventComments';
 import EventReviews from '@/components/EventReviews';
 import PaymentModal from '@/components/PaymentModal';
+import GoogleMap from '@/components/GoogleMap';
+import { ProfileSkeleton } from '@/components/SkeletonLoader';
 
 export default function EventDetailsPage() {
   const params = useParams();
@@ -198,12 +200,32 @@ export default function EventDetailsPage() {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse">
-            <div className="h-96 bg-gray-300 rounded-lg mb-6"></div>
-            <div className="space-y-4">
-              <div className="h-8 bg-gray-300 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-              <div className="h-32 bg-gray-300 rounded"></div>
+          <div className="mb-6">
+            <div className="h-4 bg-gray-300 rounded w-32 animate-pulse"></div>
+          </div>
+          <div className="h-96 bg-gray-300 rounded-lg mb-6 animate-pulse"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-white rounded-lg shadow-md p-6 animate-pulse space-y-4">
+                <div className="h-8 bg-gray-300 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-300 rounded w-full"></div>
+                <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+                <div className="h-4 bg-gray-300 rounded w-4/6"></div>
+              </div>
+              <ProfileSkeleton />
+            </div>
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-md p-6 animate-pulse space-y-4">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex gap-3">
+                    <div className="w-5 h-5 bg-gray-300 rounded"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-gray-300 rounded w-24"></div>
+                      <div className="h-3 bg-gray-300 rounded w-full"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -309,6 +331,28 @@ export default function EventDetailsPage() {
                 </div>
               </div>
             )}
+
+            {/* Google Map */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <FiMapPin className="text-red-600" />
+                Event Location
+              </h2>
+              <GoogleMap address={event.location} className="h-96 w-full" zoom={15} />
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm font-semibold text-gray-900 mb-1">Address:</p>
+                <p className="text-gray-700">{event.location}</p>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm"
+                >
+                  <FiMapPin />
+                  Open in Google Maps
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* Sidebar */}

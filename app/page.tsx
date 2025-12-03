@@ -22,6 +22,7 @@ import { statsService } from '@/lib/stats';
 import { websiteReviewService } from '@/lib/websiteReviews';
 import { Event, User, WebsiteReview } from '@/types';
 import { formatDate, formatCurrency } from '@/utils/helpers';
+import { EventCardSkeleton, HostCardSkeleton, ReviewCardSkeleton } from '@/components/SkeletonLoader';
 
 export default function Home() {
   const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
@@ -374,6 +375,10 @@ export default function Home() {
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             </div>
+          ) : featuredEvents.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600 text-lg">No featured events at the moment</p>
+            </div>
           ) : (
             <div className="grid md:grid-cols-3 gap-8">
               {featuredEvents.map((event) => (
@@ -424,8 +429,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Top Rated Hosts</h2>
           {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="grid md:grid-cols-4 gap-8">
+              {[...Array(4)].map((_, i) => (
+                <HostCardSkeleton key={i} />
+              ))}
             </div>
           ) : topHosts.length > 0 ? (
             <div className="grid md:grid-cols-4 gap-8">
@@ -481,8 +488,10 @@ export default function Home() {
             )}
           </div>
           {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+            <div className="space-y-6">
+              {[...Array(3)].map((_, i) => (
+                <ReviewCardSkeleton key={i} />
+              ))}
             </div>
           ) : websiteReviews.length > 0 ? (
             <div className="relative">
@@ -590,8 +599,10 @@ export default function Home() {
             </Link>
           </div>
           {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <EventCardSkeleton key={i} />
+              ))}
             </div>
           ) : popularEvents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -722,8 +733,24 @@ export default function Home() {
             </Link>
           </div>
           {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="space-y-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/4 h-48 md:h-auto bg-gray-300"></div>
+                    <div className="flex-1 p-6 space-y-4">
+                      <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-300 rounded w-full"></div>
+                      <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+                      <div className="grid md:grid-cols-3 gap-4 mt-4">
+                        <div className="h-4 bg-gray-300 rounded"></div>
+                        <div className="h-4 bg-gray-300 rounded"></div>
+                        <div className="h-4 bg-gray-300 rounded"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : upcomingEvents.length > 0 ? (
             <div className="space-y-6">
