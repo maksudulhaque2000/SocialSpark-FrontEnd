@@ -163,7 +163,7 @@ export default function EventReviews({ eventId, eventStatus, hostId }: EventRevi
 
   const getUserReaction = (review: Review) => {
     if (!currentUser || !review.reactions) return null;
-    return review.reactions.find((r) => r.userId._id === currentUser.id);
+    return review.reactions.find((r) => r.userId && r.userId._id === currentUser.id);
   };
 
   const renderStars = (rating: number, interactive = false, onRate?: (r: number) => void) => {
@@ -193,7 +193,7 @@ export default function EventReviews({ eventId, eventStatus, hostId }: EventRevi
     : '0.0';
 
   const canReview = eventStatus === 'completed' && currentUser && currentUser.id !== hostId;
-  const userHasReviewed = Array.isArray(reviews) && reviews.some((r) => r.userId._id === currentUser?.id);
+  const userHasReviewed = Array.isArray(reviews) && reviews.some((r) => r.userId && r.userId._id === currentUser?.id);
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -283,21 +283,21 @@ export default function EventReviews({ eventId, eventStatus, hostId }: EventRevi
         <div className="space-y-6">
           {reviews.map((review) => {
             const userReaction = getUserReaction(review);
-            const isOwnReview = currentUser?.id === review.userId._id;
+            const isOwnReview = currentUser?.id === review.userId?._id;
 
             return (
               <div key={review._id} className="border-b border-gray-200 pb-6 last:border-0">
                 <div className="flex gap-4">
                   <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    {review.userId.profileImage ? (
+                    {review.userId?.profileImage ? (
                       <img
                         src={review.userId.profileImage}
-                        alt={review.userId.name}
+                        alt={review.userId?.name || 'User'}
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
                       <span className="text-blue-600 font-bold text-lg">
-                        {review.userId.name.charAt(0)}
+                        {review.userId?.name?.charAt(0) ?? 'U'}
                       </span>
                     )}
                   </div>
@@ -305,7 +305,7 @@ export default function EventReviews({ eventId, eventStatus, hostId }: EventRevi
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <h4 className="font-semibold text-gray-900">{review.userId.name}</h4>
+                        <h4 className="font-semibold text-gray-900">{review.userId?.name || 'User'}</h4>
                         <p className="text-xs text-gray-500">{formatDate(review.createdAt)}</p>
                       </div>
                       {isOwnReview && editingId !== review._id && (
