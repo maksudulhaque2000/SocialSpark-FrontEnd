@@ -1,6 +1,6 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
-import FacebookProvider from 'next-auth/providers/facebook';
+import GitHubProvider from 'next-auth/providers/github';
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -8,15 +8,15 @@ const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID!,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
   ],
   callbacks: {
     async signIn({ user, account }) {
       try {
-        if (account?.provider === 'google' || account?.provider === 'facebook') {
+        if (account?.provider === 'google' || account?.provider === 'github') {
           // Send to backend for social login
           const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
           const response = await fetch(`${apiUrl}/auth/social-login`, {

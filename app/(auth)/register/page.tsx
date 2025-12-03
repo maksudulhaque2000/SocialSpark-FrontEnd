@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
-import { FaFacebook } from 'react-icons/fa';
+import { FaGithub } from 'react-icons/fa';
 import { authService } from '@/lib/auth';
 import { getErrorMessage, isValidEmail, isValidPassword } from '@/utils/helpers';
 import { showSuccess, showError } from '@/utils/sweetalert';
@@ -118,7 +118,7 @@ export default function RegisterPage() {
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+  const handleSocialLogin = async (provider: 'google' | 'github') => {
     try {
       setLoading(true);
       await signIn(provider, {
@@ -152,11 +152,11 @@ export default function RegisterPage() {
               <span>Continue with Google</span>
             </button>
             <button
-              onClick={() => handleSocialLogin('facebook')}
+              onClick={() => handleSocialLogin('github')}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-gray-900"
             >
-              <FaFacebook className="w-5 h-5 text-blue-600" />
-              <span>Continue with Facebook</span>
+              <FaGithub className="w-5 h-5" />
+              <span>Continue with GitHub</span>
             </button>
           </div>
 

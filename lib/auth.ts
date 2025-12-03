@@ -17,7 +17,7 @@ interface SocialLoginData {
   name: string;
   email: string;
   profileImage?: string;
-  provider: 'google' | 'facebook';
+  provider: 'google' | 'github';
 }
 
 interface AuthResponse {
