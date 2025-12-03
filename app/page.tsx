@@ -506,7 +506,7 @@ export default function Home() {
                       <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6 h-full">
                         <div className="flex items-center mb-4">
                           <div className="text-4xl mr-4">
-                            {typeof review.userId === 'object' && review.userId.profileImage ? (
+                            {review.userId && typeof review.userId === 'object' && review.userId.profileImage ? (
                               <img
                                 src={review.userId.profileImage}
                                 alt={review.name}
