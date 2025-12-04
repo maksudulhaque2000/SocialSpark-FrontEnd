@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { FiSearch, FiFilter, FiCalendar, FiMapPin, FiUsers, FiList, FiGrid } from 'react-icons/fi';
@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 import EventCalendar from '@/components/EventCalendar';
 import { EventCardSkeleton } from '@/components/SkeletonLoader';
 
-export default function EventsPage() {
+function EventsContent() {
   const searchParams = useSearchParams();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -393,5 +393,33 @@ export default function EventsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function EventsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <div className="h-10 bg-gray-300 rounded w-64 mb-2 animate-pulse"></div>
+            <div className="h-6 bg-gray-300 rounded w-48 animate-pulse"></div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8 animate-pulse">
+            <div className="space-y-4">
+              <div className="h-12 bg-gray-300 rounded"></div>
+              <div className="h-10 bg-gray-300 rounded"></div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <EventCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    }>
+      <EventsContent />
+    </Suspense>
   );
 }
