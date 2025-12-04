@@ -141,7 +141,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
 
   const getUserReaction = (comment: Comment) => {
     if (!currentUser) return null;
-    return comment.reactions.find((r) => r.userId._id === currentUser.id);
+    return comment.reactions.find((r) => r.userId && r.userId._id === currentUser.id);
   };
 
   return (
@@ -203,29 +203,29 @@ export default function EventComments({ eventId }: EventCommentsProps) {
         <div className="space-y-6">
           {comments.map((comment) => {
             const userReaction = getUserReaction(comment);
-            const isOwnComment = currentUser?.id === comment.userId._id;
+            const isOwnComment = currentUser?.id === comment.userId?._id;
 
             return (
               <div key={comment._id} className="border-b border-gray-200 pb-6 last:border-0">
                 <div className="flex gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                    {comment.userId.profileImage ? (
-                      <img
-                        src={comment.userId.profileImage}
-                        alt={comment.userId.name}
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-blue-600 font-bold">
-                        {comment.userId.name.charAt(0)}
-                      </span>
-                    )}
-                  </div>
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                      {comment.userId?.profileImage ? (
+                        <img
+                          src={comment.userId.profileImage}
+                          alt={comment.userId?.name || 'User'}
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-blue-600 font-bold">
+                          {comment.userId?.name?.charAt(0) ?? 'U'}
+                        </span>
+                      )}
+                    </div>
 
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <h4 className="font-semibold text-gray-900">{comment.userId.name}</h4>
+                        <h4 className="font-semibold text-gray-900">{comment.userId?.name || 'User'}</h4>
                         <p className="text-xs text-gray-500">{formatDate(comment.createdAt)}</p>
                       </div>
                       {isOwnComment && (

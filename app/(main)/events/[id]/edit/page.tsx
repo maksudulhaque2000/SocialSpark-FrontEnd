@@ -214,7 +214,7 @@ export default function EditEventPage() {
 
   // Check if user is the host or admin
   const isHostOrAdmin = user && (
-    (typeof event.hostId === 'object' && event.hostId._id === user.id) ||
+    (typeof event.hostId === 'object' && event.hostId?._id === user.id) ||
     (typeof event.hostId === 'string' && event.hostId === user.id) ||
     user.role === 'Admin'
   );

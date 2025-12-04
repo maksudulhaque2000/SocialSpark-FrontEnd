@@ -403,15 +403,15 @@ export default function HostProfilePage() {
                     <div key={review._id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                          {review.userId.profileImage ? (
+                          {review.userId?.profileImage ? (
                             <img
                               src={review.userId.profileImage}
-                              alt={review.userId.name}
+                              alt={review.userId?.name || 'User'}
                               className="w-full h-full rounded-full object-cover"
                             />
                           ) : (
                             <span className="text-blue-600 font-bold">
-                              {review.userId.name.charAt(0)}
+                              {review.userId?.name?.charAt(0) ?? 'U'}
                             </span>
                           )}
                         </div>
@@ -419,9 +419,9 @@ export default function HostProfilePage() {
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <h4 className="font-semibold text-gray-900">{review.userId.name}</h4>
+                              <h4 className="font-semibold text-gray-900">{review.userId?.name || 'User'}</h4>
                               <p className="text-sm text-gray-500">
-                                Event: {review.eventId.title}
+                                Event: {review.eventId?.title || 'Event'}
                               </p>
                             </div>
                             {renderStars(review.rating)}

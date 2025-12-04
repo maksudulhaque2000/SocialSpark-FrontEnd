@@ -205,8 +205,8 @@ export default function PendingEventsPage() {
                         {event.hostId && (
                           <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
                             <span className="font-semibold">Host:</span>
-                            <span>{event.hostId.name}</span>
-                            <span className="text-gray-400">({event.hostId.email})</span>
+                            <span>{event.hostId?.name || 'Unknown'}</span>
+                            <span className="text-gray-400">({event.hostId?.email || 'N/A'})</span>
                           </div>
                         )}
 
