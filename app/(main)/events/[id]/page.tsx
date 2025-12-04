@@ -302,9 +302,9 @@ export default function EventDetailsPage() {
             {host && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-bold mb-4">Hosted By</h2>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <div className="flex items-start gap-4 flex-1 min-w-0">
+                    <div className="w-16 h-16 shrink-0 rounded-full bg-blue-100 flex items-center justify-center">
                       {host.profileImage ? (
                         <img
                           src={host.profileImage}
@@ -317,14 +317,14 @@ export default function EventDetailsPage() {
                         </span>
                       )}
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-lg">{host.name}</h3>
-                      <p className="text-gray-600 text-sm">{host.bio || 'Event Host'}</p>
+                      <p className="text-gray-600 text-sm wrap-break-word">{host.bio || 'Event Host'}</p>
                     </div>
                   </div>
                   <Link
                     href={`/host/${host._id || host.id}`}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-semibold whitespace-nowrap self-start"
                   >
                     View Profile
                   </Link>
