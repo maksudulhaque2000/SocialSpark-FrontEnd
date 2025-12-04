@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { FiSearch, FiFilter, FiCalendar, FiMapPin, FiUsers, FiList, FiGrid } from 'react-icons/fi';
 import { eventService } from '@/lib/events';
 import { Event } from '@/types';
@@ -11,6 +12,7 @@ import EventCalendar from '@/components/EventCalendar';
 import { EventCardSkeleton } from '@/components/SkeletonLoader';
 
 export default function EventsPage() {
+  const searchParams = useSearchParams();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'calendar'>('grid');
@@ -41,6 +43,14 @@ export default function EventsPage() {
     'Workshops',
     'Other',
   ];
+
+  // Read category from URL on mount
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl) {
+      setFilters((prev) => ({ ...prev, category: categoryFromUrl }));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchEvents();
