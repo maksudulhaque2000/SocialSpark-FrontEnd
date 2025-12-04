@@ -74,16 +74,16 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
             <div className="flex space-x-4 mb-6">
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="https://www.facebook.com/maksudulhaque2000" target='_blank' className="text-gray-400 hover:text-white transition">
                 <FiFacebook className="w-6 h-6" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="https://twitter.com/maksudulhaque2000" target='_blank' className="text-gray-400 hover:text-white transition">
                 <FiTwitter className="w-6 h-6" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="https://www.instagram.com/maksudulhaque2000" target='_blank' className="text-gray-400 hover:text-white transition">
                 <FiInstagram className="w-6 h-6" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="https://www.linkedin.com/in/maksudulhaque2000" target='_blank' className="text-gray-400 hover:text-white transition">
                 <FiLinkedin className="w-6 h-6" />
               </a>
             </div>
@@ -104,10 +104,10 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
           <p>&copy; {new Date().getFullYear()} SocialSpark. All rights reserved.</p>
           <div className="mt-2 space-x-4">
-            <Link href="/privacy" className="hover:text-white transition">
+            <Link href="https://haque-lake.vercel.app" target='_blank' className="hover:text-white transition">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-white transition">
+            <Link href="https://haque-lake.vercel.app" target='_blank' className="hover:text-white transition">
               Terms of Service
             </Link>
           </div>
